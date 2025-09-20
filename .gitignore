@@ -1,47 +1,113 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# FoodPrint Project - Frontend & Backend
 
-# dependencies
-node_modules/
+# ================================
+# Frontend (React Native/Expo)
+# ================================
+
+# Dependencies
+frontend/node_modules/
 
 # Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
+frontend/.expo/
+frontend/dist/
+frontend/web-build/
+frontend/expo-env.d.ts
 
 # Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+frontend/.kotlin/
+frontend/*.orig.*
+frontend/*.jks
+frontend/*.p8
+frontend/*.p12
+frontend/*.key
+frontend/*.mobileprovision
 
 # Metro
-.metro-health-check*
+frontend/.metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+# Debug
+frontend/npm-debug.*
+frontend/yarn-debug.*
+frontend/yarn-error.*
+
+# Generated native folders
+frontend/ios/
+frontend/android/
+
+# ================================
+# Backend (Flask)
+# ================================
+
+# Python
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/*.so
+backend/.Python
+backend/build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/.eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+
+# Virtual Environment
+backend/venv/
+backend/env/
+backend/ENV/
+backend/.venv/
+
+# Environment variables
+backend/.env
+backend/.env.local
+backend/.env.production
+
+# Database
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
+# Flask
+backend/instance/
+backend/.webassets-cache
+
+# Testing
+backend/.coverage
+backend/.pytest_cache/
+backend/.tox/
+backend/htmlcov/
+
+# ================================
+# General
+# ================================
 
 # macOS
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-app-example
-
-# generated native folders
-/ios
-/android
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Cursor AI rules and configuration
 .cursor/
 .cursor/rules/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
