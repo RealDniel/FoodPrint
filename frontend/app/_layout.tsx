@@ -26,6 +26,13 @@ export default function RootLayout() {
           }} 
         />
         <Stack.Screen 
+          name="leaderboard" 
+          options={{ 
+            headerShown: false,
+            title: 'Leaderboard'
+          }} 
+        />
+        <Stack.Screen 
           name="scanning" 
           options={{ 
             headerShown: false,

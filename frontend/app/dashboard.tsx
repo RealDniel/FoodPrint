@@ -25,6 +25,10 @@ export default function DashboardScreen() {
     router.push('/(tabs)');
   };
 
+  const handleViewLeaderboard = () => {
+    router.push('/leaderboard')
+  }
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
@@ -98,6 +102,15 @@ export default function DashboardScreen() {
           style={styles.actionButton}
         >
           🍽️ Explore Eco Recipes
+        </FoodPrintButton>
+
+        <FoodPrintButton 
+          variant="accent" 
+          size="lg" 
+          onPress={handleViewLeaderboard}
+          style={styles.actionButton}
+        >
+          Leaderboard
         </FoodPrintButton>
       </View>
 
