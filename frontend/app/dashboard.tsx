@@ -11,8 +11,8 @@ export default function DashboardScreen() {
   const colors = Colors[colorScheme ?? 'light'];
 
   const handleScanFood = () => {
-    // Navigate to tabs for now, later will be camera screen
-    router.push('/(tabs)');
+    // Navigate to scanning screen
+    router.push('/scanning');
   };
 
   const handleViewStats = () => {

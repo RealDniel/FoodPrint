@@ -26,6 +26,20 @@ export default function RootLayout() {
           }} 
         />
         <Stack.Screen 
+          name="scanning" 
+          options={{ 
+            headerShown: false,
+            title: 'Scan Food'
+          }} 
+        />
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            headerShown: false,
+            title: 'Main App'
+          }} 
+        />
+        <Stack.Screen 
           name="modal" 
           options={{ 
             presentation: 'modal', 
