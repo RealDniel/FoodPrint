@@ -5,18 +5,47 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen 
+          name="landing" 
+          options={{ 
+            headerShown: false,
+            title: 'Welcome to FoodPrint'
+          }} 
+        />
+        <Stack.Screen 
+          name="dashboard" 
+          options={{ 
+            headerShown: false,
+            title: 'Dashboard'
+          }} 
+        />
+        <Stack.Screen 
+          name="scanning" 
+          options={{ 
+            headerShown: false,
+            title: 'Scan Food'
+          }} 
+        />
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            headerShown: false,
+            title: 'Main App'
+          }} 
+        />
+        <Stack.Screen 
+          name="modal" 
+          options={{ 
+            presentation: 'modal', 
+            title: 'Modal' 
+          }} 
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
