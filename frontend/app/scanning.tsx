@@ -354,7 +354,7 @@ export default function ScanningScreen() {
                       100
                 )
               );
-              return parseFloat(score.toFixed(2)); // Return as decimal for database
+              return parseFloat(score.toFixed(1)); // Return as decimal for database
             })(),
 
             imageUrl: null,
