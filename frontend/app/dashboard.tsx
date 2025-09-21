@@ -11,7 +11,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, Vie
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { signOut, user } = useAuth();
+  const { signOut, user, profile, loading: authLoading } = useAuth();
   const { dashboardData, dashboardLoading } = useScanHistory();
 
   const handleScanFood = () => {
@@ -67,23 +67,37 @@ export default function DashboardScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
+        {/* Subtle gradient overlay */}
+        <View style={styles.headerGradient} />
+        
         <View style={styles.headerContent}>
-          <View style={styles.headerText}>
-            <FoodPrintText variant="title" color="primary" style={styles.headerTitle}>
-              FoodPrint Dashboard
-            </FoodPrintText>
-            <FoodPrintText variant="body" color="primary" style={styles.headerSubtitle}>
-              Track your sustainable food journey
-            </FoodPrintText>
+          <View style={styles.headerLeft}>
+            <View style={styles.greetingContainer}>
+              <FoodPrintText variant="body" color="primary" style={styles.greeting}>
+                Welcome back!
+              </FoodPrintText>
+              <FoodPrintText variant="title" color="primary" style={styles.headerTitle}>
+                {authLoading ? (
+                  'FoodPrint'
+                ) : (
+                  profile?.full_name || user?.email?.split('@')[0] || 'FoodPrint'
+                )}
+              </FoodPrintText>
+            </View>
           </View>
           <TouchableOpacity 
             onPress={handleLogout}
-            style={[styles.logoutButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
+            style={[styles.logoutButton, { backgroundColor: 'rgba(255,255,255,0.15)' }]}
           >
-            <FoodPrintText variant="body" color="primary" weight="medium">
+            <FoodPrintText variant="caption" color="primary" weight="medium">
               Logout
             </FoodPrintText>
           </TouchableOpacity>
+        </View>
+        <View style={styles.headerBottom}>
+          <FoodPrintText variant="body" color="primary" style={styles.headerSubtitle}>
+            Track your sustainable food journey 🌱
+          </FoodPrintText>
         </View>
       </View>
 
@@ -218,30 +232,58 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 24,
     paddingTop: 60,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    position: 'relative',
+  },
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 16,
   },
-  headerText: {
+  headerLeft: {
     flex: 1,
+  },
+  greetingContainer: {
+    flex: 1,
+  },
+  greeting: {
+    color: '#FFFFFF',
+    opacity: 0.8,
+    marginBottom: 4,
+    fontSize: 14,
   },
   headerTitle: {
     color: '#FFFFFF',
-    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 32,
+  },
+  headerBottom: {
+    marginTop: 8,
   },
   headerSubtitle: {
     color: '#FFFFFF',
-    opacity: 0.9,
+    opacity: 0.85,
+    fontSize: 16,
+    lineHeight: 20,
   },
   logoutButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginLeft: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   statsContainer: {
     flexDirection: 'row',

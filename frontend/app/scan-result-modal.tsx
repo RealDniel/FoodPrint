@@ -74,13 +74,15 @@ export function ScanResultModal({
       });
 
       if (error) {
-        Alert.alert("Error", "Failed to save scan result. Please try again.");
+        console.error("Scan save error:", error);
+        Alert.alert("Error", `Failed to save scan result: ${error.message || error}. Please try again.`);
       } else {
         Alert.alert("Success", "Food item added to your scan history!");
         onClose();
       }
-    } catch {
-      Alert.alert("Error", "Something went wrong. Please try again.");
+    } catch (error) {
+      console.error("Scan save exception:", error);
+      Alert.alert("Error", `Something went wrong: ${error instanceof Error ? error.message : error}. Please try again.`);
     }
   };
 

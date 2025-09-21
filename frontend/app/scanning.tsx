@@ -275,6 +275,9 @@ export default function ScanningScreen() {
         const endpoints = [
           "http://172.19.55.31:8000/detect-base64",
           "http://10.251.141.131:8000/detect-base64", // Alternative IP from backend logs
+          "http://172.20.10.5:8000/detect-base64", // Current IP address
+          "http://10.0.0.5:8000/detect-base64", // Alternative IP
+          "http://192.168.1.5:8000/detect-base64", // Home network IP
           "http://127.0.0.1:8000/detect-base64", // Primary localhost
           "http://localhost:8000/detect-base64", // Localhost fallback
           "http://172.20.10.3:8000/detect-base64" // Alternative IP from backend logs
@@ -334,9 +337,11 @@ export default function ScanningScreen() {
             name: detection.food_name,
             category: "Food", // Default category
             carbonFootprint: parseFloat(
-              carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] || "N/A"
+              carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] || "0"
             ),
-            waterUsage: carbonInfo?.water_usage?.match(/[\d.]+/)?.[0] || "N/A",
+            waterUsage: parseFloat(
+              carbonInfo?.water_usage?.match(/[\d.]+/)?.[0] || "0"
+            ),
             // Score=100−( Food′s Carbon Footprint−Best Case ValueWorst Case Value−Best Case Value)∗100
             sustainabilityScore: (() => {
               const score = Math.max(
@@ -349,7 +354,7 @@ export default function ScanningScreen() {
                       100
                 )
               );
-              return score === 100.0 ? "100" : score.toFixed(1);
+              return parseFloat(score.toFixed(2)); // Return as decimal for database
             })(),
 
             imageUrl: null,
@@ -370,9 +375,9 @@ export default function ScanningScreen() {
           setScanResult({
             name: "Unknown Food Item",
             category: "Food",
-            carbonFootprint: "N/A",
-            waterUsage: "N/A",
-            sustainabilityScore: "N/A",
+            carbonFootprint: 0,
+            waterUsage: 0,
+            sustainabilityScore: 0,
             imageUrl: null,
             detailedInfo:
               "Could not identify the food item. Please try again with a clearer image.",
