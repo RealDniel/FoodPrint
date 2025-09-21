@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 
 interface Props {
-  // onUpload will be called only on successful selection. Cancel will do nothing.
-  onUpload: (uri: string) => void;
+  // onUpload called only on successful selection; on cancel -> do nothing
+  onUpload: (uri: string, base64?: string) => void;
 }
 
 export default function UploadBox({ onUpload }: Props) {
@@ -27,13 +27,43 @@ export default function UploadBox({ onUpload }: Props) {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 0.8,
+        base64: true, // request base64
       });
 
-      if (!result.cancelled) {
-        setLocalUri(result.uri);
-        onUpload(result.uri);
-      } else {
-        // User cancelled — do nothing
+      const cancelled = result.cancelled ?? result.canceled ?? false;
+      if (cancelled) {
+        // do nothing on cancel (no callback)
+        return;
+      }
+
+      let uri: string | undefined = undefined;
+      let base64: string | undefined = undefined;
+
+      if (result.uri) {
+        uri = result.uri;
+        base64 = result.base64 ?? undefined;
+      } else if (result.assets && Array.isArray(result.assets) && result.assets[0]) {
+        uri = result.assets[0].uri;
+        base64 = result.assets[0].base64 ?? undefined;
+      }
+
+      // Fallback: if base64 not returned, read file with expo-file-system
+      if (uri && !base64) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const FileSystem = require('expo-file-system');
+          // read as base64
+          const fileBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+          if (fileBase64) base64 = fileBase64;
+        } catch (fsErr) {
+          console.warn('Failed to read file as base64 fallback:', fsErr);
+        }
+      }
+
+      if (uri) {
+        setLocalUri(uri);
+        // Only call parent on success
+        onUpload(uri, base64);
       }
     } catch (err) {
       console.warn('Image pick error', err);
