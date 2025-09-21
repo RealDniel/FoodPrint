@@ -7,11 +7,11 @@ import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    StyleSheet,
-    TouchableOpacity,
-    View
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 // Types for detection results
@@ -67,12 +67,15 @@ export default function ScanningScreen() {
 
       if (photo?.base64) {
         const endpoints = [
-        "http://172.20.10.5:8000/detect-base64",
+          "http://172.20.10.2:8000/detect-base64", // Previous IP address
           "http://172.19.55.31:8000/detect-base64",
-          "http://10.251.141.131:8000/detect-base64",
-          "http://127.0.0.1:8000/detect-base64",
-          "http://localhost:8000/detect-base64",
-          "http://172.20.10.3:8000/detect-base64",
+          "http://10.251.141.131:8000/detect-base64", // Alternative IP from backend logs
+          "http://172.20.10.5:8000/detect-base64", // Current IP address
+          "http://10.0.0.5:8000/detect-base64", // Alternative IP
+          "http://192.168.1.5:8000/detect-base64", // Home network IP
+          "http://127.0.0.1:8000/detect-base64", // Primary localhost
+          "http://localhost:8000/detect-base64", // Localhost fallback
+          "http://172.20.10.3:8000/detect-base64" // Alternative IP from backend logs
         ];
 
         let response;
