@@ -1,5 +1,9 @@
+import { CameraIcon } from '@/components/camera-icon';
 import { FoodPrintButton } from '@/components/foodprint-button';
 import { FoodPrintText } from '@/components/foodprint-text';
+import { LeaderboardIcon } from '@/components/leaderboard-icon';
+import { ScanIcon } from '@/components/scan-icon';
+import { UploadIcon } from '@/components/upload-icon';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useScanHistory } from '@/contexts/ScanHistoryContext';
@@ -142,7 +146,12 @@ export default function DashboardScreen() {
           onPress={handleScanFood}
           style={styles.actionButton}
         >
-          📸 Scan Food Item
+          <View style={styles.buttonContent}>
+            <CameraIcon size={20} color="#FFFFFF" />
+            <FoodPrintText variant="body" color="primary" weight="medium" style={styles.buttonText}>
+              Scan Food Item
+            </FoodPrintText>
+          </View>
         </FoodPrintButton>
 
         <FoodPrintButton 
@@ -151,7 +160,12 @@ export default function DashboardScreen() {
           onPress={handleUploadImage}
           style={styles.actionButton}
         >
-          📁 Upload Food Image
+          <View style={styles.buttonContent}>
+            <UploadIcon size={20} color="#FFFFFF" />
+            <FoodPrintText variant="body" color="primary" weight="medium" style={styles.buttonText}>
+              Upload Food Image
+            </FoodPrintText>
+          </View>
         </FoodPrintButton>
 
         <FoodPrintButton 
@@ -160,7 +174,12 @@ export default function DashboardScreen() {
           onPress={handleViewLeaderboard}
           style={styles.actionButton}
         >
-          Leaderboard
+          <View style={styles.buttonContent}>
+            <LeaderboardIcon size={20} color="#FFFFFF" />
+            <FoodPrintText variant="body" color="primary" weight="medium" style={styles.buttonText}>
+              Leaderboard
+            </FoodPrintText>
+          </View>
         </FoodPrintButton>
       </View>
 
@@ -181,12 +200,15 @@ export default function DashboardScreen() {
           ) : dashboardData?.recentScans && dashboardData.recentScans.length > 0 ? (
             dashboardData.recentScans.map((scan, index) => (
               <View key={scan.id} style={styles.activityItem}>
-                <FoodPrintText variant="body" color="primary" weight="medium">
-                  📸 Scanned {scan.food_name}
-                </FoodPrintText>
-                <FoodPrintText variant="caption" color="muted">
-                  {new Date(scan.created_at).toLocaleDateString()}
-                </FoodPrintText>
+                <View style={styles.activityItemContent}>
+                  <ScanIcon size={18} color={colors.primary} />
+                  <FoodPrintText variant="caption" color="primary" weight="medium" style={[styles.activityText, { fontSize: 14 }]}>
+                    Scanned {scan.food_name}
+                  </FoodPrintText>
+                  <FoodPrintText variant="caption" color="muted" style={styles.activityDate}>
+                    {new Date(scan.created_at).toLocaleDateString()}
+                  </FoodPrintText>
+                </View>
               </View>
             ))
           ) : (
@@ -206,9 +228,11 @@ export default function DashboardScreen() {
         </FoodPrintText>
         
         <View style={[styles.tipCard, { backgroundColor: colors.backgroundTertiary }]}>
-          <FoodPrintText variant="body" color="primary" style={styles.tipText}>
+          <View style={styles.tipContent}>
+            <FoodPrintText variant="body" color="primary" style={styles.tipText}>
             💡 Choose locally grown vegetables to reduce your carbon footprint by up to 30% compared to imported produce.
-          </FoodPrintText>
+            </FoodPrintText>
+          </View>
         </View>
       </View>
 
@@ -314,6 +338,15 @@ const styles = StyleSheet.create({
   actionButton: {
     marginBottom: 12,
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    marginLeft: 8,
+    color: '#FFFFFF',
+  },
   activityContainer: {
     padding: 20,
   },
@@ -330,12 +363,22 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   activityItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomColor: 'rgba(0,0,0,0.05)',
+  },
+  activityItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  activityText: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  activityDate: {
+    marginLeft: 8,
+    fontSize: 11,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -367,8 +410,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  tipContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
   tipText: {
     lineHeight: 22,
+    marginLeft: 8,
+    flex: 1,
   },
   backButtonContainer: {
     padding: 20,
