@@ -219,7 +219,12 @@ class FoodDetector:
                 "detections": detections,
                 "annotated_image": annotated_image_b64,
                 "success": True,
-                "message": f"Found {len(detections)} food items"
+                "message": f"Found {len(detections)} food items",
+                "image_info": {
+                    "width": frame.shape[1],
+                    "height": frame.shape[0],
+                    "channels": frame.shape[2] if len(frame.shape) > 2 else 1
+                }
             }
 
         except Exception as e:

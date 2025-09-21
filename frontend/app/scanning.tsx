@@ -5,8 +5,28 @@ import { BrandColors, Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from "react-native";
+
+// Types for detection results
+interface Detection {
+  food_name: string;
+  confidence: number;
+  bbox: [number, number, number, number];
+  carbon_footprint_info: any;
+}
+
+interface DetectionOverlay {
+  detection: Detection;
+  id: string;
+  fadeAnim: Animated.Value;
+}
 
 export default function ScanningScreen() {
   const colorScheme = useColorScheme();
@@ -16,7 +36,160 @@ export default function ScanningScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
+  const [continuousMode, setContinuousMode] = useState(false);
+  const [detections, setDetections] = useState<DetectionOverlay[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+  const [imageInfo, setImageInfo] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
   const cameraRef = useRef<CameraView>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastDetectionTime = useRef<number>(0);
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+  // Continuous detection function
+  const performDetection = useCallback(async () => {
+    if (!cameraRef.current || isProcessing) return;
+
+    const now = Date.now();
+    if (now - lastDetectionTime.current < 1000) return; // Throttle to 1 second
+
+    setIsProcessing(true);
+    lastDetectionTime.current = now;
+
+    try {
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.6, // Lower quality for faster processing
+        base64: true
+      });
+
+      if (photo?.base64) {
+        const endpoints = [
+          "http://172.19.55.31:8000/detect-base64",
+          "http://10.251.141.131:8000/detect-base64",
+          "http://127.0.0.1:8000/detect-base64",
+          "http://localhost:8000/detect-base64",
+          "http://172.20.10.3:8000/detect-base64"
+        ];
+
+        let response;
+
+        for (const endpoint of endpoints) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // Shorter timeout for continuous mode
+
+            response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                image: `data:image/jpeg;base64,${photo.base64}`
+              }),
+              signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              break;
+            }
+          } catch {
+            response = null;
+          }
+        }
+
+        if (response) {
+          const result = await response.json();
+
+          // Store image info for better coordinate mapping
+          if (result.image_info) {
+            setImageInfo(result.image_info);
+          }
+
+          if (result.success && result.detections.length > 0) {
+            // Filter detections by confidence and validate coordinates
+            const validDetections = result.detections.filter(
+              (detection: Detection) => {
+                const [x1, y1, x2, y2] = detection.bbox;
+                return (
+                  detection.confidence > 0.3 && // Minimum confidence threshold
+                  x1 >= 0 &&
+                  y1 >= 0 &&
+                  x2 > x1 &&
+                  y2 > y1 && // Valid coordinates
+                  x2 - x1 > 20 &&
+                  y2 - y1 > 20 // Minimum size
+                );
+              }
+            );
+
+            if (validDetections.length === 0) return;
+
+            // Create new detection overlays
+            const newOverlays: DetectionOverlay[] = validDetections.map(
+              (detection: Detection, index: number) => ({
+                detection,
+                id: `${Date.now()}-${index}`,
+                fadeAnim: new Animated.Value(0)
+              })
+            );
+
+            // Clear old detections and add new ones
+            setDetections((prev) => {
+              // Fade out old detections
+              prev.forEach((overlay) => {
+                Animated.timing(overlay.fadeAnim, {
+                  toValue: 0,
+                  duration: 300,
+                  useNativeDriver: true
+                }).start();
+              });
+
+              // Fade in new detections
+              setTimeout(() => {
+                newOverlays.forEach((overlay) => {
+                  Animated.timing(overlay.fadeAnim, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true
+                  }).start();
+                });
+              }, 100);
+
+              return newOverlays;
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Continuous detection error:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing]);
+
+  // Start/stop continuous detection
+  useEffect(() => {
+    if (continuousMode) {
+      intervalRef.current = setInterval(performDetection, 1000); // Every 1 second
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setDetections([]); // Clear detections when stopping
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [continuousMode, performDetection]);
 
   // Handle camera permission
   if (!permission) {
@@ -80,6 +253,10 @@ export default function ScanningScreen() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   };
 
+  const toggleContinuousMode = () => {
+    setContinuousMode((current) => !current);
+  };
+
   const handleScanPress = async () => {
     if (!cameraRef.current) return;
 
@@ -96,6 +273,8 @@ export default function ScanningScreen() {
         // Send to backend for analysis
         // Try multiple endpoints in case of network changes
         const endpoints = [
+          "http://172.19.55.31:8000/detect-base64",
+          "http://10.251.141.131:8000/detect-base64", // Alternative IP from backend logs
           "http://127.0.0.1:8000/detect-base64", // Primary localhost
           "http://localhost:8000/detect-base64", // Localhost fallback
           "http://172.20.10.3:8000/detect-base64" // Alternative IP from backend logs
@@ -248,6 +427,167 @@ export default function ScanningScreen() {
     setShowModal(false);
   };
 
+  // Render detection overlays
+  const renderDetectionOverlays = () => {
+    return detections.map((overlay) => {
+      const [x1, y1, x2, y2] = overlay.detection.bbox;
+
+      // Improved coordinate mapping with proper aspect ratio handling
+      // Use actual image dimensions when available, fallback to screen dimensions
+      const cameraViewWidth = screenWidth;
+      const cameraViewHeight = screenHeight;
+
+      let scaleX, scaleY;
+      let scaledX1, scaledY1, scaledX2, scaledY2;
+
+      if (imageInfo) {
+        // Use actual image dimensions for more accurate mapping
+        const imageWidth = imageInfo.width;
+        const imageHeight = imageInfo.height;
+
+        // Calculate scaling factors from image space to screen space
+        scaleX = cameraViewWidth / imageWidth;
+        scaleY = cameraViewHeight / imageHeight;
+
+        // Scale coordinates directly
+        scaledX1 = x1 * scaleX;
+        scaledY1 = y1 * scaleY;
+        scaledX2 = x2 * scaleX;
+        scaledY2 = y2 * scaleY;
+      } else {
+        // Fallback to YOLO-based mapping (less accurate)
+        const yoloInputSize = 640;
+        const screenAspectRatio = screenWidth / screenHeight;
+        const yoloAspectRatio = 1;
+
+        let yoloActualWidth, yoloActualHeight;
+        let offsetX = 0,
+          offsetY = 0;
+
+        if (screenAspectRatio > yoloAspectRatio) {
+          yoloActualHeight = yoloInputSize;
+          yoloActualWidth = Math.round(yoloInputSize * screenAspectRatio);
+          offsetX = (yoloActualWidth - yoloInputSize) / 2;
+        } else {
+          yoloActualWidth = yoloInputSize;
+          yoloActualHeight = Math.round(yoloInputSize / screenAspectRatio);
+          offsetY = (yoloActualHeight - yoloInputSize) / 2;
+        }
+
+        scaleX = cameraViewWidth / yoloActualWidth;
+        scaleY = cameraViewHeight / yoloActualHeight;
+
+        scaledX1 = (x1 + offsetX) * scaleX;
+        scaledY1 = (y1 + offsetY) * scaleY;
+        scaledX2 = (x2 + offsetX) * scaleX;
+        scaledY2 = (y2 + offsetY) * scaleY;
+      }
+
+      // Ensure coordinates are within bounds
+      const clampedX1 = Math.max(0, Math.min(scaledX1, cameraViewWidth));
+      const clampedY1 = Math.max(0, Math.min(scaledY1, cameraViewHeight));
+      const clampedX2 = Math.max(0, Math.min(scaledX2, cameraViewWidth));
+      const clampedY2 = Math.max(0, Math.min(scaledY2, cameraViewHeight));
+
+      // Calculate final dimensions
+      const finalWidth = Math.max(0, clampedX2 - clampedX1);
+      const finalHeight = Math.max(0, clampedY2 - clampedY1);
+
+      // Only render if the bounding box has valid dimensions
+      if (finalWidth < 10 || finalHeight < 10) {
+        return null;
+      }
+
+      return (
+        <Animated.View
+          key={overlay.id}
+          style={[
+            styles.detectionOverlay,
+            {
+              left: clampedX1,
+              top: clampedY1,
+              width: finalWidth,
+              height: finalHeight,
+              opacity: overlay.fadeAnim
+            }
+          ]}
+        >
+          {/* Bounding box */}
+          <View style={styles.boundingBox} />
+
+          {/* Food name and CO2 footprint */}
+          <View style={styles.detectionLabel}>
+            <FoodPrintText
+              variant="caption"
+              color="primary"
+              style={styles.detectionText}
+            >
+              {overlay.detection.food_name} -{" "}
+              {overlay.detection.carbon_footprint_info?.concise_fact?.match(
+                /[\d.]+/
+              )?.[0] || "N/A"}
+              kg CO₂/kg
+            </FoodPrintText>
+          </View>
+        </Animated.View>
+      );
+    });
+  };
+
+  // Render debug overlay for coordinate mapping
+  const renderDebugOverlay = () => {
+    if (!debugMode) return null;
+
+    const screenAspectRatio = screenWidth / screenHeight;
+
+    return (
+      <View style={styles.debugOverlay}>
+        <FoodPrintText
+          variant="caption"
+          color="primary"
+          style={styles.debugText}
+        >
+          Screen: {screenWidth}x{screenHeight} (AR:{" "}
+          {screenAspectRatio.toFixed(2)})
+        </FoodPrintText>
+        {imageInfo ? (
+          <FoodPrintText
+            variant="caption"
+            color="primary"
+            style={styles.debugText}
+          >
+            Image: {imageInfo.width}x{imageInfo.height} (AR:{" "}
+            {(imageInfo.width / imageInfo.height).toFixed(2)})
+          </FoodPrintText>
+        ) : (
+          <FoodPrintText
+            variant="caption"
+            color="primary"
+            style={styles.debugText}
+          >
+            Image: Unknown (using YOLO fallback)
+          </FoodPrintText>
+        )}
+        <FoodPrintText
+          variant="caption"
+          color="primary"
+          style={styles.debugText}
+        >
+          Detections: {detections.length}
+        </FoodPrintText>
+        {detections.length > 0 && (
+          <FoodPrintText
+            variant="caption"
+            color="primary"
+            style={styles.debugText}
+          >
+            First bbox: [{detections[0].detection.bbox.join(", ")}]
+          </FoodPrintText>
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* Camera View */}
@@ -281,43 +621,104 @@ export default function ScanningScreen() {
                 🔄 Flip
               </FoodPrintText>
             </TouchableOpacity>
-          </View>
 
-          {/* Scanning Frame */}
-          <View style={styles.scanningFrame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
-
-            <FoodPrintText
-              variant="body"
-              color="primary"
-              style={styles.scanningText}
+            <TouchableOpacity
+              onPress={() => setDebugMode(!debugMode)}
+              style={[styles.topButton, { backgroundColor: "rgba(0,0,0,0.5)" }]}
             >
-              Position food item within the frame
-            </FoodPrintText>
+              <FoodPrintText
+                variant="body"
+                color="primary"
+                style={styles.topButtonText}
+              >
+                {debugMode ? "🐛 Debug ON" : "🐛 Debug"}
+              </FoodPrintText>
+            </TouchableOpacity>
           </View>
+
+          {/* Debug Overlay */}
+          {renderDebugOverlay()}
+
+          {/* Detection Overlays */}
+          {renderDetectionOverlays()}
+
+          {/* Scanning Frame - only show in manual mode */}
+          {!continuousMode && (
+            <View style={styles.scanningFrame}>
+              <View style={[styles.corner, styles.topLeft]} />
+              <View style={[styles.corner, styles.topRight]} />
+              <View style={[styles.corner, styles.bottomLeft]} />
+              <View style={[styles.corner, styles.bottomRight]} />
+
+              <FoodPrintText
+                variant="body"
+                color="primary"
+                style={styles.scanningText}
+              >
+                Position food item within the frame
+              </FoodPrintText>
+            </View>
+          )}
 
           {/* Bottom Controls */}
           <View style={styles.bottomControls}>
-            <FoodPrintButton
-              variant="accent"
-              size="lg"
-              onPress={handleScanPress}
-              style={styles.scanButton}
-              disabled={isScanning}
-            >
-              {isScanning ? "Scanning..." : "📸 Scan Food"}
-            </FoodPrintButton>
+            {continuousMode ? (
+              // Live mode - stop button at bottom
+              <View style={styles.liveModeControls}>
+                <FoodPrintButton
+                  variant="secondary"
+                  size="lg"
+                  onPress={toggleContinuousMode}
+                  style={styles.bottomStopButton}
+                >
+                  🔴 Stop Live Detection
+                </FoodPrintButton>
+              </View>
+            ) : (
+              // Manual mode - both buttons
+              <View style={styles.buttonRow}>
+                <FoodPrintButton
+                  variant="accent"
+                  size="lg"
+                  onPress={handleScanPress}
+                  style={[styles.scanButton, { flex: 1, marginRight: 8 }]}
+                  disabled={isScanning}
+                >
+                  {isScanning ? "Scanning..." : "Scan Food"}
+                </FoodPrintButton>
+
+                <FoodPrintButton
+                  variant="secondary"
+                  size="lg"
+                  onPress={toggleContinuousMode}
+                  style={[styles.continuousButton, { flex: 1, marginLeft: 8 }]}
+                >
+                  🟢 Live
+                </FoodPrintButton>
+              </View>
+            )}
 
             <FoodPrintText
               variant="caption"
               color="primary"
               style={styles.instructionText}
             >
-              Tap to scan and analyze environmental impact
+              {continuousMode
+                ? "Point your camera at food items to see real-time detection"
+                : "Tap to scan and analyze environmental impact"}
             </FoodPrintText>
+
+            <View style={styles.processingContainer}>
+              {isProcessing && (
+                <FoodPrintText
+                  variant="caption"
+                  color="muted"
+                  style={styles.processingText}
+                >
+                  🔄 Processing...
+                </FoodPrintText>
+              )}
+            </View>
           </View>
         </View>
       </CameraView>
@@ -382,11 +783,13 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   scanningFrame: {
-    flex: 1,
+    position: "absolute",
+    top: 150,
+    left: 40,
+    right: 40,
+    bottom: 250, // Increased spacing to match top spacing
     justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 40,
-    marginVertical: 14
+    alignItems: "center"
   },
   corner: {
     position: "absolute",
@@ -429,13 +832,15 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   bottomControls: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingBottom: 40,
     paddingHorizontal: 20,
     alignItems: "center"
   },
   scanButton: {
-    width: "100%",
-    marginBottom: 12,
     shadowColor: BrandColors.brightOrange,
     shadowOffset: {
       width: 0,
@@ -451,6 +856,98 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     paddingHorizontal: 16,
     paddingVertical: 8,
+    borderRadius: 20,
+    marginTop: 8
+  },
+  buttonRow: {
+    flexDirection: "row",
+    width: "100%",
+    marginBottom: 12
+  },
+  liveModeControls: {
+    width: "100%",
+    alignItems: "center"
+  },
+  bottomStopButton: {
+    width: "100%",
+    maxWidth: 300,
+    shadowColor: BrandColors.brightOrange,
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8
+  },
+  continuousButton: {
+    shadowColor: BrandColors.brightOrange,
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8
+  },
+  processingContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 8
+  },
+  processingText: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20
+  },
+  detectionOverlay: {
+    position: "absolute",
+    borderWidth: 2,
+    borderColor: BrandColors.brightOrange,
+    borderRadius: 4
+  },
+  boundingBox: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: BrandColors.brightOrange,
+    borderRadius: 4
+  },
+  detectionLabel: {
+    position: "absolute",
+    top: -25,
+    left: 0,
+    backgroundColor: BrandColors.brightOrange,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    minWidth: 80
+  },
+  detectionText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+    textAlign: "center"
+  },
+  debugOverlay: {
+    position: "absolute",
+    top: 150,
+    left: 20,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center"
+  },
+  debugText: {
+    color: "#00FF00",
+    fontSize: 10,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 2
   }
 });
