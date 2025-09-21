@@ -29,9 +29,11 @@ ALTER TABLE public.scan_history ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view all profiles for leaderboard" ON public.profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can view own scan history" ON public.scan_history;
+DROP POLICY IF EXISTS "Users can view all scan history for leaderboard" ON public.scan_history;
 DROP POLICY IF EXISTS "Users can insert own scan history" ON public.scan_history;
 DROP POLICY IF EXISTS "Users can update own scan history" ON public.scan_history;
 DROP POLICY IF EXISTS "Users can delete own scan history" ON public.scan_history;
@@ -39,6 +41,10 @@ DROP POLICY IF EXISTS "Users can delete own scan history" ON public.scan_history
 -- Create policies for profiles table
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
+
+-- Allow all authenticated users to view profile names for leaderboard purposes
+CREATE POLICY "Users can view all profiles for leaderboard" ON public.profiles
+  FOR SELECT USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
@@ -49,6 +55,10 @@ CREATE POLICY "Users can insert own profile" ON public.profiles
 -- Create policies for scan_history table
 CREATE POLICY "Users can view own scan history" ON public.scan_history
   FOR SELECT USING (auth.uid() = user_id);
+
+-- Allow all authenticated users to view scan data for leaderboard purposes
+CREATE POLICY "Users can view all scan history for leaderboard" ON public.scan_history
+  FOR SELECT USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Users can insert own scan history" ON public.scan_history
   FOR INSERT WITH CHECK (auth.uid() = user_id);
