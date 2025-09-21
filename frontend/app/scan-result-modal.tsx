@@ -135,7 +135,7 @@ export function ScanResultModal({
                   ]}
                 >
                   <FoodPrintText variant="title" color="error" size="lg">
-                    {scanResult.carbonFootprint}kg
+                    {scanResult.carbonFootprint} kg
                   </FoodPrintText>
                   <FoodPrintText variant="caption" color="muted">
                     CO₂ Footprint
@@ -149,7 +149,7 @@ export function ScanResultModal({
                   ]}
                 >
                   <FoodPrintText variant="title" color="secondary" size="lg">
-                    {scanResult.waterUsage}L
+                    {scanResult.waterUsage} L/kg
                   </FoodPrintText>
                   <FoodPrintText variant="caption" color="muted">
                     Water Usage

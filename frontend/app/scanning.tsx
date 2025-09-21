@@ -155,10 +155,17 @@ export default function ScanningScreen() {
             name: detection.food_name,
             category: "Food", // Default category
             carbonFootprint: parseFloat(
-              carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] || "0.5"
+              carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] || "N/A"
             ),
-            waterUsage: Math.floor(Math.random() * 50) + 10, // Placeholder - could be enhanced
-            sustainabilityScore: Math.floor(Math.random() * 40) + 60, // Placeholder
+            waterUsage: carbonInfo?.water_usage?.match(/[\d.]+/)?.[0] || "N/A",
+            // Score=100−( Food′s Carbon Footprint−Best Case ValueWorst Case Value−Best Case Value)∗100
+            sustainabilityScore: (
+              100 -
+              ((carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] - 0.3) /
+                (60 - 0.3)) *
+                100
+            ).toFixed(1),
+
             imageUrl: null,
             detailedInfo:
               carbonInfo?.detailed_info ||
@@ -176,9 +183,9 @@ export default function ScanningScreen() {
           setScanResult({
             name: "Unknown Food Item",
             category: "Food",
-            carbonFootprint: 0.5,
-            waterUsage: 20,
-            sustainabilityScore: 50,
+            carbonFootprint: "N/A",
+            waterUsage: "N/A",
+            sustainabilityScore: "N/A",
             imageUrl: null,
             detailedInfo:
               "Could not identify the food item. Please try again with a clearer image."
