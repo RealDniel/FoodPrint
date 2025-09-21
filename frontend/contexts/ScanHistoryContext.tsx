@@ -10,17 +10,28 @@ interface DashboardData {
   recentScans: ScanHistory[];
 }
 
+interface LeaderboardEntry {
+  user_id: string;
+  user_name: string;
+  total_scans: number;
+  average_eco_score: number;
+  rank: number;
+}
+
 interface ScanHistoryContextType {
   scans: ScanHistory[];
   loading: boolean;
   dashboardData: DashboardData | null;
   dashboardLoading: boolean;
+  leaderboardData: LeaderboardEntry[];
+  leaderboardLoading: boolean;
   addScan: (scanData: Omit<NewScanHistory, 'user_id'>) => Promise<{ error: any }>;
   getScansByDateRange: (startDate: string, endDate: string) => ScanHistory[];
   getScansByPeriod: (period: 'daily' | 'weekly' | 'monthly') => ScanHistory[];
   refreshScans: () => Promise<void>;
   refreshDashboardData: () => Promise<void>;
   getDashboardData: () => DashboardData | null;
+  fetchLeaderboard: () => Promise<void>;
 }
 
 const ScanHistoryContext = createContext<ScanHistoryContextType | undefined>(undefined);
@@ -30,6 +41,8 @@ export function ScanHistoryProvider({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -226,17 +239,121 @@ export function ScanHistoryProvider({ children }: { children: React.ReactNode })
     return dashboardData;
   };
 
+  const fetchLeaderboard = async () => {
+    setLeaderboardLoading(true);
+    try {
+      console.log('Fetching leaderboard data from all users...');
+      
+      // Fetch ALL scan history from the scan_history table
+      const { data: scanData, error: scanError } = await supabase
+        .from('scan_history')
+        .select(`
+          user_id,
+          sustainability_score
+        `)
+        .order('created_at', { ascending: false }); // Get all scans, not just recent ones
+
+      if (scanError) {
+        console.error('Error fetching scan data:', scanError);
+        return;
+      }
+
+      if (!scanData || scanData.length === 0) {
+        console.log('No scan data found in scan_history table');
+        setLeaderboardData([]);
+        return;
+      }
+
+      console.log(`Found ${scanData.length} total scans from all users`);
+
+      // Get unique user IDs from scan data
+      const uniqueUserIds = [...new Set(scanData.map((scan: any) => scan.user_id))];
+      console.log(`Found ${uniqueUserIds.length} unique users`);
+
+      // Fetch user profiles for all users who have scans
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', uniqueUserIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        return;
+      }
+
+      // Create a map of user_id to user_name
+      const userNamesMap = new Map<string, string>();
+      profilesData?.forEach((profile: any) => {
+        userNamesMap.set(profile.id, profile.full_name || 'Anonymous User');
+      });
+
+      // Group by user and calculate averages
+      const userStats = new Map<string, { 
+        user_name: string; 
+        scores: number[]; 
+        total_scans: number 
+      }>();
+
+      scanData.forEach((scan: any) => {
+        const userId = scan.user_id;
+        const score = parseFloat(scan.sustainability_score);
+        const userName = userNamesMap.get(userId) || 'Anonymous User';
+
+        if (!userStats.has(userId)) {
+          userStats.set(userId, {
+            user_name: userName,
+            scores: [],
+            total_scans: 0
+          });
+        }
+
+        const userStat = userStats.get(userId)!;
+        userStat.scores.push(score);
+        userStat.total_scans++;
+      });
+
+      console.log(`Found ${userStats.size} unique users with scan data`);
+
+      // Calculate averages and create leaderboard entries
+      const leaderboardEntries: LeaderboardEntry[] = Array.from(userStats.entries())
+        .map(([userId, stats]) => ({
+          user_id: userId,
+          user_name: stats.user_name,
+          total_scans: stats.total_scans,
+          average_eco_score: stats.scores.reduce((sum, score) => sum + score, 0) / stats.scores.length,
+          rank: 0 // Will be set after sorting
+        }))
+        .sort((a, b) => b.average_eco_score - a.average_eco_score) // Sort by highest average score first
+        .slice(0, 10) // Get TOP 10 users only
+        .map((entry, index) => ({
+          ...entry,
+          rank: index + 1
+        }));
+
+      console.log('Top 10 leaderboard data:', leaderboardEntries);
+      setLeaderboardData(leaderboardEntries);
+
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
   const value = {
     scans,
     loading,
     dashboardData,
     dashboardLoading,
+    leaderboardData,
+    leaderboardLoading,
     addScan,
     getScansByDateRange,
     getScansByPeriod,
     refreshScans,
     refreshDashboardData,
     getDashboardData,
+    fetchLeaderboard,
   };
 
   return (

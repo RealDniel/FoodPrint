@@ -232,6 +232,7 @@ export default function DashboardScreen() {
             <FoodPrintText variant="body" color="primary" style={styles.tipText}>
             💡 Choose locally grown vegetables to reduce your carbon footprint by up to 30% compared to imported produce.
             </FoodPrintText>
+
           </View>
         </View>
       </View>
@@ -430,3 +431,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
+
