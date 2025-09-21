@@ -1,14 +1,16 @@
 import { FoodPrintButton } from '@/components/foodprint-button';
 import { FoodPrintText } from '@/components/foodprint-text';
 import { Colors } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { signOut, user } = useAuth();
 
   const handleScanFood = () => {
     // Navigate to scanning screen
@@ -29,16 +31,63 @@ export default function DashboardScreen() {
     router.push('/leaderboard')
   }
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Add timeout to the entire logout process
+              const logoutPromise = signOut();
+              const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Logout timeout')), 8000)
+              );
+              
+              await Promise.race([logoutPromise, timeoutPromise]);
+              
+              // Simple navigation to landing page
+              router.replace('/landing');
+              
+            } catch (error) {
+              // Even if logout fails, try to navigate away
+              router.replace('/landing');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
-        <FoodPrintText variant="title" color="primary" style={styles.headerTitle}>
-          FoodPrint Dashboard
-        </FoodPrintText>
-        <FoodPrintText variant="body" color="primary" style={styles.headerSubtitle}>
-          Track your sustainable food journey
-        </FoodPrintText>
+        <View style={styles.headerContent}>
+          <View style={styles.headerText}>
+            <FoodPrintText variant="title" color="primary" style={styles.headerTitle}>
+              FoodPrint Dashboard
+            </FoodPrintText>
+            <FoodPrintText variant="body" color="primary" style={styles.headerSubtitle}>
+              Track your sustainable food journey
+            </FoodPrintText>
+          </View>
+          <TouchableOpacity 
+            onPress={handleLogout}
+            style={[styles.logoutButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
+          >
+            <FoodPrintText variant="body" color="primary" weight="medium">
+              Logout
+            </FoodPrintText>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Quick Stats */}
@@ -185,7 +234,14 @@ const styles = StyleSheet.create({
   header: {
     padding: 24,
     paddingTop: 60,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  headerText: {
+    flex: 1,
   },
   headerTitle: {
     color: '#FFFFFF',
@@ -194,6 +250,12 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     color: '#FFFFFF',
     opacity: 0.9,
+  },
+  logoutButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 16,
   },
   statsContainer: {
     flexDirection: 'row',

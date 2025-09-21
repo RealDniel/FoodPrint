@@ -3,14 +3,18 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ScanHistoryProvider } from '@/contexts/ScanHistoryContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <AuthProvider>
+      <ScanHistoryProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
         <Stack.Screen 
           name="landing" 
           options={{ 
@@ -30,6 +34,20 @@ export default function RootLayout() {
           options={{ 
             headerShown: false,
             title: 'Leaderboard'
+          }} 
+        />
+        <Stack.Screen 
+          name="login" 
+          options={{ 
+            headerShown: false,
+            title: 'Sign In'
+          }} 
+        />
+        <Stack.Screen 
+          name="signup" 
+          options={{ 
+            headerShown: false,
+            title: 'Sign Up'
           }} 
         />
         <Stack.Screen 
@@ -53,8 +71,10 @@ export default function RootLayout() {
             title: 'Modal' 
           }} 
         />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </ScanHistoryProvider>
+    </AuthProvider>
   );
 }

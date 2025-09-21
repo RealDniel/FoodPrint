@@ -13,7 +13,11 @@ export default function LandingScreen() {
   const colors = Colors[colorScheme ?? 'light'];
 
   const handleGetStarted = () => {
-    router.push('/dashboard');
+    router.push('/login');
+  };
+
+  const handleSignUp = () => {
+    router.push('/signup');
   };
 
   return (
@@ -76,7 +80,16 @@ export default function LandingScreen() {
             onPress={handleGetStarted}
             style={styles.getStartedButton}
           >
-            Get Started
+            Sign In
+          </FoodPrintButton>
+          
+          <FoodPrintButton 
+            variant="outline" 
+            size="lg" 
+            onPress={handleSignUp}
+            style={styles.signUpButton}
+          >
+            Create Account
           </FoodPrintButton>
           
           <FoodPrintText variant="caption" color="muted" style={styles.footerText}>
@@ -164,7 +177,7 @@ const styles = StyleSheet.create({
   },
   getStartedButton: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 12,
     shadowColor: BrandColors.brightOrange,
     shadowOffset: {
       width: 0,
@@ -173,6 +186,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  signUpButton: {
+    width: '100%',
+    marginBottom: 16,
   },
   footerText: {
     textAlign: 'center',
