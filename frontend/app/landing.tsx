@@ -13,7 +13,11 @@ export default function LandingScreen() {
   const colors = Colors[colorScheme ?? 'light'];
 
   const handleGetStarted = () => {
-    router.push('/dashboard');
+    router.push('/login');
+  };
+
+  const handleSignUp = () => {
+    router.push('/signup');
   };
 
   return (
@@ -23,61 +27,57 @@ export default function LandingScreen() {
       
       {/* Main content */}
       <View style={styles.content}>
-        {/* Logo/Icon area */}
-        <View style={styles.logoContainer}>
-          <View style={[styles.logoCircle, { backgroundColor: colors.primary }]}>
-            <FoodPrintText variant="title" color="primary" style={styles.logoText}>
-              🌱
+        {/* Top section */}
+        <View style={styles.topSection}>
+          {/* Logo/Icon area */}
+          <View style={styles.logoContainer}>
+            <View style={[styles.logoCircle, { backgroundColor: colors.primary }]}>
+              <FoodPrintText variant="title" color="primary" style={styles.logoText}>
+                🌱
+              </FoodPrintText>
+            </View>
+          </View>
+
+          {/* App title and description */}
+          <View style={styles.textContainer}>
+            <FoodPrintText variant="title" color="primary" size="4xl" style={styles.appTitle}>
+              FoodPrint
+            </FoodPrintText>
+            
+            <FoodPrintText variant="subtitle" color="secondary" size="lg" style={styles.subtitle}>
+              Track your food's environmental impact
+            </FoodPrintText>
+            
+            <FoodPrintText variant="body" color="muted" style={styles.description}>
+              Make sustainable food choices with every meal. 
+              Scan, track, and discover eco-friendly alternatives 
+              for a greener future.
             </FoodPrintText>
           </View>
         </View>
 
-        {/* App title and description */}
-        <View style={styles.textContainer}>
-          <FoodPrintText variant="title" color="primary" size="4xl" style={styles.appTitle}>
-            FoodPrint
-          </FoodPrintText>
-          
-          <FoodPrintText variant="subtitle" color="secondary" size="lg" style={styles.subtitle}>
-            Track your food's environmental impact
-          </FoodPrintText>
-          
-          <FoodPrintText variant="body" color="muted" style={styles.description}>
-            Make sustainable food choices with every meal. 
-            Scan, track, and discover eco-friendly alternatives 
-            for a greener future.
-          </FoodPrintText>
-        </View>
 
-        {/* Feature highlights */}
-        <View style={styles.featuresContainer}>
-          <View style={styles.featureItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              📸 Scan Food Items
-            </FoodPrintText>
+        {/* Bottom section */}
+        <View style={styles.bottomSection}>
+          <View style={styles.buttonContainer}>
+            <FoodPrintButton 
+              variant="accent" 
+              size="lg" 
+              onPress={handleGetStarted}
+              style={styles.getStartedButton}
+            >
+              Sign In
+            </FoodPrintButton>
+            
+            <FoodPrintButton 
+              variant="outline" 
+              size="lg" 
+              onPress={handleSignUp}
+              style={styles.signUpButton}
+            >
+              Create Account
+            </FoodPrintButton>
           </View>
-          <View style={styles.featureItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              📊 Track Environmental Impact
-            </FoodPrintText>
-          </View>
-          <View style={styles.featureItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              🌱 Get Eco-Friendly Suggestions
-            </FoodPrintText>
-          </View>
-        </View>
-
-        {/* Get Started button */}
-        <View style={styles.buttonContainer}>
-          <FoodPrintButton 
-            variant="accent" 
-            size="lg" 
-            onPress={handleGetStarted}
-            style={styles.getStartedButton}
-          >
-            Get Started
-          </FoodPrintButton>
           
           <FoodPrintText variant="caption" color="muted" style={styles.footerText}>
             Join thousands making sustainable food choices
@@ -105,11 +105,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 40,
-    justifyContent: 'space-between',
+  },
+  topSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 40,
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 40,
+    marginBottom: 20,
   },
   logoCircle: {
     width: 120,
@@ -132,7 +137,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
   },
   appTitle: {
     textAlign: 'center',
@@ -149,22 +154,18 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     paddingHorizontal: 20,
   },
-  featuresContainer: {
-    marginVertical: 30,
-  },
-  featureItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginVertical: 4,
-    borderRadius: 12,
-    backgroundColor: 'rgba(82, 183, 136, 0.1)',
+  bottomSection: {
+    flex: 0,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   buttonContainer: {
     alignItems: 'center',
+    marginBottom: 16,
   },
   getStartedButton: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 12,
     shadowColor: BrandColors.brightOrange,
     shadowOffset: {
       width: 0,
@@ -174,7 +175,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
   },
+  signUpButton: {
+    width: '100%',
+    marginBottom: 0,
+  },
   footerText: {
     textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });

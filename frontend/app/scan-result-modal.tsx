@@ -12,6 +12,13 @@ import {
 } from "react-native";
 import { FoodPrintButton } from "../components/foodprint-button";
 import { FoodPrintText } from "../components/foodprint-text";
+import { BrandColors, Colors } from '@/constants/theme';
+import { useScanHistory } from '@/contexts/ScanHistoryContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import React from 'react';
+import { Alert, Dimensions, Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FoodPrintButton } from '../components/foodprint-button';
+import { FoodPrintText } from '../components/foodprint-text';
 
 const { height } = Dimensions.get("window");
 
@@ -45,6 +52,7 @@ export function ScanResultModal({
     title: string;
     description: string;
   } | null>(null);
+  const { addScan } = useScanHistory();
 
   const getSustainabilityRating = (score: number) => {
     if (score >= 80) return { text: "Excellent", color: colors.success };
@@ -57,10 +65,28 @@ export function ScanResultModal({
     scanResult.sustainabilityScore
   );
 
-  const handleAddToList = () => {
-    // TODO: Implement adding to food log
-    console.log("Adding to food log:", scanResult);
-    onClose();
+  const handleAddToList = async () => {
+    try {
+      const { error } = await addScan({
+        food_name: scanResult.name,
+        food_category: scanResult.category,
+        carbon_footprint: scanResult.carbonFootprint,
+        water_usage: scanResult.waterUsage,
+        sustainability_score: scanResult.sustainabilityScore,
+        scan_date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        image_url: scanResult.imageUrl,
+        notes: null,
+      });
+
+      if (error) {
+        Alert.alert('Error', 'Failed to save scan result. Please try again.');
+      } else {
+        Alert.alert('Success', 'Food item added to your scan history!');
+        onClose();
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   };
 
   const handleMetricInfo = (title: string, description: string) => {
