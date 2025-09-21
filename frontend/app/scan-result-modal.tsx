@@ -1,6 +1,7 @@
 import { BrandColors, Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import React from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -39,6 +40,11 @@ export function ScanResultModal({
 }: ScanResultModalProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+  const [infoModalVisible, setInfoModalVisible] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
 
   const getSustainabilityRating = (score: number) => {
     if (score >= 80) return { text: "Excellent", color: colors.success };
@@ -55,6 +61,16 @@ export function ScanResultModal({
     // TODO: Implement adding to food log
     console.log("Adding to food log:", scanResult);
     onClose();
+  };
+
+  const handleMetricInfo = (title: string, description: string) => {
+    setSelectedMetric({ title, description });
+    setInfoModalVisible(true);
+  };
+
+  const closeInfoModal = () => {
+    setInfoModalVisible(false);
+    setSelectedMetric(null);
   };
 
   return (
@@ -128,33 +144,72 @@ export function ScanResultModal({
               </FoodPrintText>
 
               <View style={styles.metricsContainer}>
-                <View
+                <TouchableOpacity
                   style={[
                     styles.metricCard,
-                    { backgroundColor: colors.backgroundSecondary }
+                    styles.clickableCard,
+                    {
+                      backgroundColor: colors.backgroundSecondary,
+                      borderColor: colors.border
+                    }
                   ]}
+                  onPress={() =>
+                    handleMetricInfo(
+                      "CO₂ Footprint",
+                      scanResult.detailedInfo ||
+                        "Carbon footprint measures the total greenhouse gas emissions caused directly or indirectly by this food item, expressed as carbon dioxide equivalent (CO₂e). This includes emissions from production, processing, transportation, and packaging."
+                    )
+                  }
                 >
-                  <FoodPrintText variant="title" color="error" size="lg">
-                    {scanResult.carbonFootprint} kg
-                  </FoodPrintText>
-                  <FoodPrintText variant="caption" color="muted">
-                    CO₂ Footprint
-                  </FoodPrintText>
-                </View>
+                  <View style={styles.metricContent}>
+                    <FoodPrintText variant="title" color="secondary" size="lg">
+                      {scanResult.carbonFootprint} kg
+                    </FoodPrintText>
+                    <FoodPrintText variant="caption" color="muted">
+                      CO₂ Footprint
+                    </FoodPrintText>
+                  </View>
+                  <View style={styles.infoIcon}>
+                    <MaterialIcons
+                      name="info-outline"
+                      size={16}
+                      color={colors.secondary}
+                    />
+                  </View>
+                </TouchableOpacity>
 
-                <View
+                <TouchableOpacity
                   style={[
                     styles.metricCard,
-                    { backgroundColor: colors.backgroundSecondary }
+                    styles.clickableCard,
+                    {
+                      backgroundColor: colors.backgroundSecondary,
+                      borderColor: colors.border
+                    }
                   ]}
+                  onPress={() =>
+                    handleMetricInfo(
+                      "Water Usage",
+                      "Water usage represents the total amount of water required to produce this food item, including irrigation, processing, and packaging. This metric helps assess the environmental impact related to water consumption and scarcity."
+                    )
+                  }
                 >
-                  <FoodPrintText variant="title" color="secondary" size="lg">
-                    {scanResult.waterUsage} L/kg
-                  </FoodPrintText>
-                  <FoodPrintText variant="caption" color="muted">
-                    Water Usage
-                  </FoodPrintText>
-                </View>
+                  <View style={styles.metricContent}>
+                    <FoodPrintText variant="title" color="secondary" size="lg">
+                      {scanResult.waterUsage} L/kg
+                    </FoodPrintText>
+                    <FoodPrintText variant="caption" color="muted">
+                      Water Usage
+                    </FoodPrintText>
+                  </View>
+                  <View style={styles.infoIcon}>
+                    <MaterialIcons
+                      name="info-outline"
+                      size={16}
+                      color={colors.secondary}
+                    />
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -168,11 +223,21 @@ export function ScanResultModal({
                 📈 Sustainability Score
               </FoodPrintText>
 
-              <View
+              <TouchableOpacity
                 style={[
                   styles.scoreContainer,
-                  { backgroundColor: colors.backgroundSecondary }
+                  styles.clickableCard,
+                  {
+                    backgroundColor: colors.backgroundSecondary,
+                    borderColor: colors.border
+                  }
                 ]}
+                onPress={() =>
+                  handleMetricInfo(
+                    "Environmental Rating",
+                    "The Environmental Rating is calculated based on the carbon footprint of the food item. It uses a scale from 0-100, where higher scores indicate lower environmental impact. The rating considers factors like production methods, transportation distance, and processing requirements to provide an overall sustainability assessment."
+                  )
+                }
               >
                 <View style={styles.scoreCircle}>
                   <FoodPrintText variant="title" color="primary" size="2xl">
@@ -187,7 +252,14 @@ export function ScanResultModal({
                     Environmental Rating
                   </FoodPrintText>
                 </View>
-              </View>
+                <View style={styles.infoIcon}>
+                  <MaterialIcons
+                    name="info-outline"
+                    size={16}
+                    color={colors.secondary}
+                  />
+                </View>
+              </TouchableOpacity>
             </View>
 
             {/* Eco Tips */}
@@ -297,6 +369,51 @@ export function ScanResultModal({
           </View>
         </View>
       </View>
+
+      {/* Info Modal */}
+      <Modal
+        visible={infoModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closeInfoModal}
+      >
+        <View style={styles.infoModalOverlay}>
+          <TouchableOpacity
+            style={styles.infoModalBackground}
+            activeOpacity={1}
+            onPress={closeInfoModal}
+          />
+          <View
+            style={[
+              styles.infoModalContainer,
+              { backgroundColor: colors.background }
+            ]}
+          >
+            <View style={styles.infoModalHeader}>
+              <FoodPrintText variant="subtitle" color="primary">
+                {selectedMetric?.title}
+              </FoodPrintText>
+              <TouchableOpacity
+                onPress={closeInfoModal}
+                style={styles.infoCloseButton}
+              >
+                <FoodPrintText variant="body" color="muted">
+                  ✕
+                </FoodPrintText>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.infoModalContent}>
+              <FoodPrintText
+                variant="body"
+                color="primary"
+                style={styles.infoModalText}
+              >
+                {selectedMetric?.description}
+              </FoodPrintText>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </Modal>
   );
 }
@@ -418,5 +535,60 @@ const styles = StyleSheet.create({
   },
   lastBulletText: {
     marginBottom: 0
+  },
+  clickableCard: {
+    borderWidth: 1,
+    position: "relative"
+  },
+  metricContent: {
+    flex: 1,
+    alignItems: "center"
+  },
+  infoIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8
+  },
+  infoModalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)"
+  },
+  infoModalBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  infoModalContainer: {
+    width: "90%",
+    maxHeight: "70%",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 16
+  },
+  infoModalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16
+  },
+  infoCloseButton: {
+    padding: 8
+  },
+  infoModalContent: {
+    flex: 1
+  },
+  infoModalText: {
+    lineHeight: 24
   }
 });
