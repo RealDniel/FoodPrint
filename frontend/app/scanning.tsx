@@ -159,12 +159,19 @@ export default function ScanningScreen() {
             ),
             waterUsage: carbonInfo?.water_usage?.match(/[\d.]+/)?.[0] || "N/A",
             // Score=100−( Food′s Carbon Footprint−Best Case ValueWorst Case Value−Best Case Value)∗100
-            sustainabilityScore: (
-              100 -
-              ((carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] - 0.3) /
-                (60 - 0.3)) *
-                100
-            ).toFixed(1),
+            sustainabilityScore: (() => {
+              const score = Math.max(
+                0,
+                Math.min(
+                  100,
+                  100 -
+                    ((carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] - 0.3) /
+                      (60 - 0.3)) *
+                      100
+                )
+              );
+              return score === 100.0 ? "100" : score.toFixed(1);
+            })(),
 
             imageUrl: null,
             detailedInfo:
