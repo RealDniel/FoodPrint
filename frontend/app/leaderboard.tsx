@@ -10,13 +10,50 @@ import { useScanHistory } from '@/contexts/ScanHistoryContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-import { ActivityIndicator, Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function LeaderboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { leaderboardData, leaderboardLoading, fetchLeaderboard } = useScanHistory();
   const { user } = useAuth();
+
+  // Animation values for floating elements
+  const floatAnim1 = useRef(new Animated.Value(0)).current;
+  const floatAnim2 = useRef(new Animated.Value(0)).current;
+  const floatAnim3 = useRef(new Animated.Value(0)).current;
+  const floatAnim4 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Create floating animations for different elements
+    const createFloatAnimation = (animValue: Animated.Value, duration: number, delay: number = 0) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(animValue, {
+            toValue: 1,
+            duration: duration,
+            delay: delay,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animValue, {
+            toValue: 0,
+            duration: duration,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    // Start all floating animations
+    Animated.parallel([
+      createFloatAnimation(floatAnim1, 3600, 0),
+      createFloatAnimation(floatAnim2, 4200, 600),
+      createFloatAnimation(floatAnim3, 3300, 1200),
+      createFloatAnimation(floatAnim4, 3900, 1800),
+    ]).start();
+  }, []);
   
   // Animation values - start with full opacity for instant clarity
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -181,6 +218,129 @@ export default function LeaderboardScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Floating background elements */}
+      <View style={styles.floatingContainer}>
+        {/* Floating leaf 1 */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingLeaf1,
+            {
+              opacity: floatAnim1.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -12],
+                  }),
+                },
+                {
+                  rotate: floatAnim1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '7deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍃</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating apple */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingApple,
+            {
+              opacity: floatAnim2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -18],
+                  }),
+                },
+                {
+                  scale: floatAnim2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍎</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating carrot */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingCarrot,
+            {
+              opacity: floatAnim3.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim3.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+                {
+                  rotate: floatAnim3.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-5deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥕</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating broccoli */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingBroccoli,
+            {
+              opacity: floatAnim4.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim4.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -14],
+                  }),
+                },
+                {
+                  scale: floatAnim4.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥦</FoodPrintText>
+        </Animated.View>
+      </View>
+
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
         {/* Subtle gradient overlay */}
@@ -288,6 +448,36 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  floatingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  floatingElement: {
+    position: 'absolute',
+  },
+  floatingEmoji: {
+    fontSize: 18,
+  },
+  floatingLeaf1: {
+    top: height * 0.25,
+    left: width * 0.1,
+  },
+  floatingApple: {
+    top: height * 0.45,
+    right: width * 0.08,
+  },
+  floatingCarrot: {
+    top: height * 0.65,
+    left: width * 0.15,
+  },
+  floatingBroccoli: {
+    top: height * 0.85,
+    right: width * 0.12,
   },
   header: {
     paddingTop: 60,

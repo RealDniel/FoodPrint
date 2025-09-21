@@ -9,14 +9,91 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useScanHistory } from '@/contexts/ScanHistoryContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
-import React from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { ActivityIndicator, Alert, Animated, Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { signOut, user, profile, loading: authLoading } = useAuth();
   const { dashboardData, dashboardLoading } = useScanHistory();
+
+  // Animation values for floating elements
+  const floatAnim1 = useRef(new Animated.Value(0)).current;
+  const floatAnim2 = useRef(new Animated.Value(0)).current;
+  const floatAnim3 = useRef(new Animated.Value(0)).current;
+  const floatAnim4 = useRef(new Animated.Value(0)).current;
+  const floatAnim5 = useRef(new Animated.Value(0)).current;
+  const floatAnim6 = useRef(new Animated.Value(0)).current;
+  const floatAnim7 = useRef(new Animated.Value(0)).current;
+  const floatAnim8 = useRef(new Animated.Value(0)).current;
+  const floatAnim9 = useRef(new Animated.Value(0)).current;
+  const floatAnim10 = useRef(new Animated.Value(0)).current;
+  const floatAnim11 = useRef(new Animated.Value(0)).current;
+  const floatAnim12 = useRef(new Animated.Value(0)).current;
+  const floatAnim13 = useRef(new Animated.Value(0)).current;
+  const floatAnim14 = useRef(new Animated.Value(0)).current;
+  const floatAnim15 = useRef(new Animated.Value(0)).current;
+  const floatAnim16 = useRef(new Animated.Value(0)).current;
+  const floatAnim17 = useRef(new Animated.Value(0)).current;
+  const floatAnim18 = useRef(new Animated.Value(0)).current;
+  const floatAnim19 = useRef(new Animated.Value(0)).current;
+  const floatAnim20 = useRef(new Animated.Value(0)).current;
+  const floatAnim21 = useRef(new Animated.Value(0)).current;
+  const floatAnim22 = useRef(new Animated.Value(0)).current;
+  const floatAnim23 = useRef(new Animated.Value(0)).current;
+  const floatAnim24 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Create floating animations for different elements
+    const createFloatAnimation = (animValue: Animated.Value, duration: number, delay: number = 0) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(animValue, {
+            toValue: 1,
+            duration: duration,
+            delay: delay,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animValue, {
+            toValue: 0,
+            duration: duration,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    // Start all floating animations
+    Animated.parallel([
+      createFloatAnimation(floatAnim1, 3500, 0),
+      createFloatAnimation(floatAnim2, 4000, 800),
+      createFloatAnimation(floatAnim3, 3200, 1600),
+      createFloatAnimation(floatAnim4, 3800, 2400),
+      createFloatAnimation(floatAnim5, 3600, 3000),
+      createFloatAnimation(floatAnim6, 4200, 3800),
+      createFloatAnimation(floatAnim7, 3300, 4600),
+      createFloatAnimation(floatAnim8, 3900, 5400),
+      createFloatAnimation(floatAnim9, 3700, 6200),
+      createFloatAnimation(floatAnim10, 4100, 7000),
+      createFloatAnimation(floatAnim11, 3400, 7800),
+      createFloatAnimation(floatAnim12, 3900, 8600),
+      createFloatAnimation(floatAnim13, 3600, 9400),
+      createFloatAnimation(floatAnim14, 4200, 10200),
+      createFloatAnimation(floatAnim15, 3300, 11000),
+      createFloatAnimation(floatAnim16, 3800, 11800),
+      createFloatAnimation(floatAnim17, 3650, 12600),
+      createFloatAnimation(floatAnim18, 4150, 13400),
+      createFloatAnimation(floatAnim19, 3350, 14200),
+      createFloatAnimation(floatAnim20, 3850, 15000),
+      createFloatAnimation(floatAnim21, 3550, 15800),
+      createFloatAnimation(floatAnim22, 4050, 16600),
+      createFloatAnimation(floatAnim23, 3250, 17400),
+      createFloatAnimation(floatAnim24, 3750, 18200),
+    ]).start();
+  }, []);
 
   const handleScanFood = () => {
     // Navigate to scanning screen
@@ -69,6 +146,729 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Floating background elements */}
+      <View style={styles.floatingContainer}>
+        {/* Floating leaf 1 */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingLeaf1,
+            {
+              opacity: floatAnim1.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -15],
+                  }),
+                },
+                {
+                  rotate: floatAnim1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '8deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍃</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating apple */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingApple,
+            {
+              opacity: floatAnim2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -20],
+                  }),
+                },
+                {
+                  scale: floatAnim2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍎</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating carrot */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingCarrot,
+            {
+              opacity: floatAnim3.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim3.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -18],
+                  }),
+                },
+                {
+                  rotate: floatAnim3.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-6deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥕</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating broccoli */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingBroccoli,
+            {
+              opacity: floatAnim4.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim4.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+                {
+                  scale: floatAnim4.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥦</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating tomato */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingTomato,
+            {
+              opacity: floatAnim5.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim5.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -14],
+                  }),
+                },
+                {
+                  rotate: floatAnim5.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '9deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍅</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating corn */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingCorn,
+            {
+              opacity: floatAnim6.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim6.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -19],
+                  }),
+                },
+                {
+                  scale: floatAnim6.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🌽</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating pepper */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingPepper,
+            {
+              opacity: floatAnim7.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim7.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -17],
+                  }),
+                },
+                {
+                  rotate: floatAnim7.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-7deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🫑</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating eggplant */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingEggplant,
+            {
+              opacity: floatAnim8.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim8.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -15],
+                  }),
+                },
+                {
+                  scale: floatAnim8.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍆</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating cucumber */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingCucumber,
+            {
+              opacity: floatAnim9.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim9.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -13],
+                  }),
+                },
+                {
+                  rotate: floatAnim9.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '6deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥒</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating mushroom */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingMushroom,
+            {
+              opacity: floatAnim10.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim10.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -18],
+                  }),
+                },
+                {
+                  scale: floatAnim10.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍄</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating lettuce */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingLettuce,
+            {
+              opacity: floatAnim11.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim11.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+                {
+                  rotate: floatAnim11.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-8deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥬</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating potato */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingPotato,
+            {
+              opacity: floatAnim12.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim12.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -14],
+                  }),
+                },
+                {
+                  scale: floatAnim12.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥔</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating onion */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingOnion,
+            {
+              opacity: floatAnim13.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim13.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -17],
+                  }),
+                },
+                {
+                  rotate: floatAnim13.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '7deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🧅</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating garlic */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingGarlic,
+            {
+              opacity: floatAnim14.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim14.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -15],
+                  }),
+                },
+                {
+                  scale: floatAnim14.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🧄</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating radish */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingRadish,
+            {
+              opacity: floatAnim15.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim15.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -12],
+                  }),
+                },
+                {
+                  rotate: floatAnim15.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-5deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥕</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating avocado */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingAvocado,
+            {
+              opacity: floatAnim16.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim16.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -19],
+                  }),
+                },
+                {
+                  scale: floatAnim16.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🥑</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating strawberry */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingStrawberry,
+            {
+              opacity: floatAnim17.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim17.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -11],
+                  }),
+                },
+                {
+                  rotate: floatAnim17.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '5deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍓</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating banana */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingBanana,
+            {
+              opacity: floatAnim18.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim18.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+                {
+                  scale: floatAnim18.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍌</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating grapes */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingGrapes,
+            {
+              opacity: floatAnim19.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim19.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -14],
+                  }),
+                },
+                {
+                  rotate: floatAnim19.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-6deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍇</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating orange */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingOrange,
+            {
+              opacity: floatAnim20.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim20.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -17],
+                  }),
+                },
+                {
+                  scale: floatAnim20.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍊</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating lemon */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingLemon,
+            {
+              opacity: floatAnim21.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim21.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -13],
+                  }),
+                },
+                {
+                  rotate: floatAnim21.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '7deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍋</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating watermelon */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingWatermelon,
+            {
+              opacity: floatAnim22.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim22.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -18],
+                  }),
+                },
+                {
+                  scale: floatAnim22.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1.1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍉</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating cherry */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingCherry,
+            {
+              opacity: floatAnim23.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.2, 0.5],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim23.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -12],
+                  }),
+                },
+                {
+                  rotate: floatAnim23.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '-4deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍒</FoodPrintText>
+        </Animated.View>
+
+        {/* Floating peach */}
+        <Animated.View
+          style={[
+            styles.floatingElement,
+            styles.floatingPeach,
+            {
+              opacity: floatAnim24.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.3, 0.6],
+              }),
+              transform: [
+                {
+                  translateY: floatAnim24.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -15],
+                  }),
+                },
+                {
+                  scale: floatAnim24.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1.05],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FoodPrintText style={styles.floatingEmoji}>🍑</FoodPrintText>
+        </Animated.View>
+      </View>
+
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
         {/* Subtle gradient overlay */}
@@ -255,6 +1055,116 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  floatingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  floatingElement: {
+    position: 'absolute',
+  },
+  floatingEmoji: {
+    fontSize: 20,
+  },
+  floatingLeaf1: {
+    top: height * 0.3,
+    right: width * 0.1,
+  },
+  floatingApple: {
+    top: height * 0.5,
+    left: width * 0.05,
+  },
+  floatingCarrot: {
+    top: height * 0.7,
+    right: width * 0.15,
+  },
+  floatingBroccoli: {
+    top: height * 0.9,
+    left: width * 0.2,
+  },
+  floatingTomato: {
+    top: height * 0.35,
+    left: width * 0.8,
+  },
+  floatingCorn: {
+    top: height * 0.55,
+    right: width * 0.05,
+  },
+  floatingPepper: {
+    top: height * 0.75,
+    left: width * 0.7,
+  },
+  floatingEggplant: {
+    top: height * 0.95,
+    right: width * 0.25,
+  },
+  floatingCucumber: {
+    top: height * 0.4,
+    left: width * 0.3,
+  },
+  floatingMushroom: {
+    top: height * 0.6,
+    right: width * 0.3,
+  },
+  floatingLettuce: {
+    top: height * 0.8,
+    left: width * 0.4,
+  },
+  floatingPotato: {
+    top: height * 0.2,
+    right: width * 0.4,
+  },
+  floatingOnion: {
+    top: height * 0.45,
+    left: width * 0.6,
+  },
+  floatingGarlic: {
+    top: height * 0.65,
+    right: width * 0.6,
+  },
+  floatingRadish: {
+    top: height * 0.85,
+    left: width * 0.1,
+  },
+  floatingAvocado: {
+    top: height * 0.15,
+    right: width * 0.7,
+  },
+  floatingStrawberry: {
+    top: height * 0.25,
+    left: width * 0.5,
+  },
+  floatingBanana: {
+    top: height * 0.35,
+    right: width * 0.5,
+  },
+  floatingGrapes: {
+    top: height * 0.5,
+    left: width * 0.8,
+  },
+  floatingOrange: {
+    top: height * 0.6,
+    right: width * 0.8,
+  },
+  floatingLemon: {
+    top: height * 0.75,
+    left: width * 0.2,
+  },
+  floatingWatermelon: {
+    top: height * 0.85,
+    right: width * 0.2,
+  },
+  floatingCherry: {
+    top: height * 0.1,
+    left: width * 0.9,
+  },
+  floatingPeach: {
+    top: height * 0.9,
+    right: width * 0.9,
   },
   header: {
     paddingTop: 60,
