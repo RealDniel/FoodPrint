@@ -24,16 +24,6 @@ export default function DashboardScreen() {
     router.push('/upload-image');
   };
 
-  const handleViewStats = () => {
-    // Navigate to tabs for now, later will be stats screen
-    router.push('/(tabs)');
-  };
-
-  const handleExploreRecipes = () => {
-    // Navigate to tabs for now, later will be recipes screen
-    router.push('/(tabs)');
-  };
-
   const handleViewLeaderboard = () => {
     router.push('/leaderboard')
   }
@@ -148,24 +138,6 @@ export default function DashboardScreen() {
           style={styles.actionButton}
         >
           📁 Upload Food Image
-        </FoodPrintButton>
-        
-        <FoodPrintButton 
-          variant="primary" 
-          size="md" 
-          onPress={handleViewStats}
-          style={styles.actionButton}
-        >
-          📊 View Detailed Stats
-        </FoodPrintButton>
-        
-        <FoodPrintButton 
-          variant="secondary" 
-          size="md" 
-          onPress={handleExploreRecipes}
-          style={styles.actionButton}
-        >
-          🍽️ Explore Eco Recipes
         </FoodPrintButton>
 
         <FoodPrintButton 

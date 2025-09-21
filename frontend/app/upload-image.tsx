@@ -12,10 +12,12 @@ export default function UploadImageScreen() {
 	const [pickedImageUri, setPickedImageUri] = useState<string | null>(null);
 
 	const handleUpload = (uri: string) => {
-		// Save image then show modal (simulate analysis)
-		setPickedImageUri(uri);
-		setShowModal(true);
-	};
+			// Only proceed when a real image URI is provided
+			if (uri) {
+				setPickedImageUri(uri);
+				setShowModal(true);
+			}
+		};
 
 	const handleModalClose = () => setShowModal(false);
 
