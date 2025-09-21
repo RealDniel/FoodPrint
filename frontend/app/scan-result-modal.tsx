@@ -1,8 +1,10 @@
 import { BrandColors, Colors } from "@/constants/theme";
+import { useScanHistory } from "@/contexts/ScanHistoryContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Modal,
   ScrollView,
@@ -12,13 +14,6 @@ import {
 } from "react-native";
 import { FoodPrintButton } from "../components/foodprint-button";
 import { FoodPrintText } from "../components/foodprint-text";
-import { BrandColors, Colors } from '@/constants/theme';
-import { useScanHistory } from '@/contexts/ScanHistoryContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import React from 'react';
-import { Alert, Dimensions, Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { FoodPrintButton } from '../components/foodprint-button';
-import { FoodPrintText } from '../components/foodprint-text';
 
 const { height } = Dimensions.get("window");
 
@@ -73,19 +68,19 @@ export function ScanResultModal({
         carbon_footprint: scanResult.carbonFootprint,
         water_usage: scanResult.waterUsage,
         sustainability_score: scanResult.sustainabilityScore,
-        scan_date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        scan_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
         image_url: scanResult.imageUrl,
-        notes: null,
+        notes: null
       });
 
       if (error) {
-        Alert.alert('Error', 'Failed to save scan result. Please try again.');
+        Alert.alert("Error", "Failed to save scan result. Please try again.");
       } else {
-        Alert.alert('Success', 'Food item added to your scan history!');
+        Alert.alert("Success", "Food item added to your scan history!");
         onClose();
       }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } catch {
+      Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
 
@@ -303,7 +298,7 @@ export function ScanResultModal({
                   { backgroundColor: colors.backgroundSecondary }
                 ]}
               >
-                {scanResult.educationalSnippets?.map(
+                {(scanResult.educationalSnippets || []).map(
                   (snippet: string, index: number) => (
                     <FoodPrintText
                       variant="body"
@@ -312,7 +307,7 @@ export function ScanResultModal({
                       style={[
                         styles.bulletText,
                         index ===
-                          (scanResult.educationalSnippets?.length || 0) - 1 &&
+                          (scanResult.educationalSnippets || []).length - 1 &&
                           styles.lastBulletText
                       ]}
                     >
@@ -361,7 +356,7 @@ export function ScanResultModal({
                   { backgroundColor: colors.backgroundSecondary }
                 ]}
               >
-                {scanResult.alternatives?.map(
+                {(scanResult.alternatives || []).map(
                   (alternative: string, index: number) => (
                     <FoodPrintText
                       variant="body"
@@ -369,7 +364,7 @@ export function ScanResultModal({
                       key={alternative}
                       style={[
                         styles.bulletText,
-                        index === (scanResult.alternatives?.length || 0) - 1 &&
+                        index === (scanResult.alternatives || []).length - 1 &&
                           styles.lastBulletText
                       ]}
                     >

@@ -177,11 +177,12 @@ export default function ScanningScreen() {
             detailedInfo:
               carbonInfo?.detailed_info ||
               "No additional information available.",
-            educationalSnippets:
-              carbonInfo?.educational_snippets ||
-              "No educational snippets available.",
-            alternatives:
-              carbonInfo?.alternatives || "No alternative foods available."
+            educationalSnippets: Array.isArray(carbonInfo?.educational_snippets)
+              ? carbonInfo.educational_snippets
+              : ["No educational snippets available."],
+            alternatives: Array.isArray(carbonInfo?.alternatives)
+              ? carbonInfo.alternatives
+              : ["No alternative foods available."]
           };
 
           setScanResult(scanResult);
@@ -195,7 +196,11 @@ export default function ScanningScreen() {
             sustainabilityScore: "N/A",
             imageUrl: null,
             detailedInfo:
+              "Could not identify the food item. Please try again with a clearer image.",
+            educationalSnippets: [
               "Could not identify the food item. Please try again with a clearer image."
+            ],
+            alternatives: ["Please try scanning a different food item."]
           });
         }
       }
@@ -229,7 +234,9 @@ export default function ScanningScreen() {
         waterUsage: 20,
         sustainabilityScore: 50,
         imageUrl: null,
-        detailedInfo: errorMessage
+        detailedInfo: errorMessage,
+        educationalSnippets: [errorMessage],
+        alternatives: ["Please try again or check your connection."]
       });
     }
 
