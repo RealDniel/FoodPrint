@@ -67,7 +67,7 @@ export default function ScanningScreen() {
 
       if (photo?.base64) {
         const endpoints = [
-          "http://172.20.10.2:8000/detect-base64", // Previous IP address
+          "http://172.20.10.3:8000/detect-base64", // Previous IP address
           "http://172.19.55.31:8000/detect-base64",
           "http://10.251.141.131:8000/detect-base64", // Alternative IP from backend logs
           "http://172.20.10.5:8000/detect-base64", // Current IP address
@@ -277,7 +277,7 @@ export default function ScanningScreen() {
         // Send to backend for analysis
         // Try multiple endpoints in case of network changes
         const endpoints = [
-          "http://172.20.10.2:8000/detect-base64", // Previous IP address
+          "http://172.20.10.3:8000/detect-base64", // Previous IP address
           "http://172.19.55.31:8000/detect-base64",
           "http://10.251.141.131:8000/detect-base64", // Alternative IP from backend logs
           "http://172.20.10.5:8000/detect-base64", // Current IP address
@@ -617,23 +617,7 @@ export default function ScanningScreen() {
                 🔄 Flip
               </FoodPrintText>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setDebugMode(!debugMode)}
-              style={[styles.topButton, { backgroundColor: "rgba(0,0,0,0.5)" }]}
-            >
-              <FoodPrintText
-                variant="body"
-                color="primary"
-                style={styles.topButtonText}
-              >
-                {debugMode ? "🐛 Debug ON" : "🐛 Debug"}
-              </FoodPrintText>
-            </TouchableOpacity>
           </View>
-
-          {/* Debug Overlay */}
-          {renderDebugOverlay()}
 
           {/* Detection Overlays */}
           {renderDetectionOverlays()}

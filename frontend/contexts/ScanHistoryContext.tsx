@@ -163,7 +163,7 @@ export function ScanHistoryProvider({ children }: { children: React.ReactNode })
   const calculateAverageEcoScore = (scans: ScanHistory[]): number => {
     if (scans.length === 0) return 100; // Default to 100% for empty state
     const total = scans.reduce((sum, scan) => sum + scan.sustainability_score, 0);
-    return Math.round(total / scans.length);
+    return parseFloat((total / scans.length).toFixed(1));
   };
 
   const getRecentScans = (scans: ScanHistory[], limit: number = 3): ScanHistory[] => {

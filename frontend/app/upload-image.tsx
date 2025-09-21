@@ -30,7 +30,7 @@ export default function UploadImageScreen() {
 			const payloadBase64 = base64 ? base64 : null;
 			// Endpoints used in scanning.tsx — reuse same approach
 			const endpoints = [
-		        "http://172.20.10.2:8000/detect-base64", // Previous IP address
+		        "http://172.20.10.3:8000/detect-base64", // Previous IP address
 				'http://172.20.10.5:8000/detect-base64',
 				'http://10.0.0.5:8000/detect-base64',
 				'http://192.168.1.5:8000/detect-base64',
@@ -90,7 +90,7 @@ export default function UploadImageScreen() {
 						const raw = parseFloat(carbonInfo?.concise_fact?.match(/[\d.]+/)?.[0] || '0');
 						// example scoring logic; adapt to your backend
 						const score = Math.max(0, Math.min(100, 100 - ((raw - 0.3) / (60 - 0.3)) * 100));
-						return parseFloat(score.toFixed(2));
+						return parseFloat(score.toFixed(1));
 					})(),
 					imageUrl: uri,
 					detailedInfo: carbonInfo?.detailed_info || 'No additional information available.',
