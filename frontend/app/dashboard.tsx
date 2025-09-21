@@ -19,6 +19,11 @@ export default function DashboardScreen() {
     router.push('/scanning');
   };
 
+  const handleUploadImage = () => {
+    // Navigate to scanning screen
+    router.push('/upload-image');
+  };
+
   const handleViewStats = () => {
     // Navigate to tabs for now, later will be stats screen
     router.push('/(tabs)');
@@ -134,6 +139,15 @@ export default function DashboardScreen() {
           style={styles.actionButton}
         >
           📸 Scan Food Item
+        </FoodPrintButton>
+
+        <FoodPrintButton 
+          variant="accent" 
+          size="lg" 
+          onPress={handleUploadImage}
+          style={styles.actionButton}
+        >
+          📁 Upload Food Image
         </FoodPrintButton>
         
         <FoodPrintButton 
