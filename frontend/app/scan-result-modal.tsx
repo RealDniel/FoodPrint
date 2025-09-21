@@ -22,6 +22,8 @@ interface ScanResult {
   sustainabilityScore: number; // 0-100
   imageUrl?: string | null;
   detailedInfo?: string; // Additional info from AI
+  educationalSnippets?: string[]; // Educational snippets
+  alternatives?: string[]; // Alternative foods
 }
 
 interface ScanResultModalProps {
@@ -146,7 +148,7 @@ export function ScanResultModal({
                     { backgroundColor: colors.backgroundSecondary }
                   ]}
                 >
-                  <FoodPrintText variant="title" color="info" size="lg">
+                  <FoodPrintText variant="title" color="secondary" size="lg">
                     {scanResult.waterUsage}L
                   </FoodPrintText>
                   <FoodPrintText variant="caption" color="muted">
@@ -200,28 +202,27 @@ export function ScanResultModal({
 
               <View
                 style={[
-                  styles.tipCard,
-                  { backgroundColor: colors.backgroundTertiary }
+                  styles.infoCard,
+                  { backgroundColor: colors.backgroundSecondary }
                 ]}
               >
-                <FoodPrintText variant="body" color="primary">
-                  • Choose locally grown {scanResult.category.toLowerCase()}{" "}
-                  when possible
-                </FoodPrintText>
-                <FoodPrintText
-                  variant="body"
-                  color="primary"
-                  style={styles.tipText}
-                >
-                  • Organic options typically have lower environmental impact
-                </FoodPrintText>
-                <FoodPrintText
-                  variant="body"
-                  color="primary"
-                  style={styles.tipText}
-                >
-                  • Consider seasonal availability for better sustainability
-                </FoodPrintText>
+                {scanResult.educationalSnippets?.map(
+                  (snippet: string, index: number) => (
+                    <FoodPrintText
+                      variant="body"
+                      color="primary"
+                      key={snippet}
+                      style={[
+                        styles.bulletText,
+                        index ===
+                          (scanResult.educationalSnippets?.length || 0) - 1 &&
+                          styles.lastBulletText
+                      ]}
+                    >
+                      {"• " + snippet}
+                    </FoodPrintText>
+                  )
+                )}
               </View>
             </View>
 
@@ -241,53 +242,44 @@ export function ScanResultModal({
                   { backgroundColor: colors.backgroundSecondary }
                 ]}
               >
-                <FoodPrintText
-                  variant="body"
-                  color="primary"
-                  style={styles.infoText}
-                >
+                <FoodPrintText variant="body" color="primary">
                   {scanResult.detailedInfo ||
                     "No additional information available for this food item."}
                 </FoodPrintText>
               </View>
             </View>
 
-            {/* Environmental Impact Details */}
+            {/* Alternative Foods */}
             <View style={styles.section}>
               <FoodPrintText
                 variant="subtitle"
                 color="primary"
                 style={styles.sectionTitle}
               >
-                🌍 Environmental Impact Details
+                🍎 Alternative Foods
               </FoodPrintText>
-
               <View
                 style={[
-                  styles.detailsCard,
-                  { backgroundColor: colors.backgroundTertiary }
+                  styles.infoCard,
+                  { backgroundColor: colors.backgroundSecondary }
                 ]}
               >
-                <FoodPrintText
-                  variant="body"
-                  color="primary"
-                  style={styles.detailsText}
-                >
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-                  odit aut fugit, sed quia consequuntur magni dolores eos qui
-                  ratione voluptatem sequi nesciunt. Neque porro quisquam est,
-                  qui dolorem ipsum quia dolor sit amet.
-                </FoodPrintText>
-                <FoodPrintText
-                  variant="body"
-                  color="primary"
-                  style={styles.detailsText}
-                >
-                  Consectetur, adipisci velit, sed quia non numquam eius modi
-                  tempora incidunt ut labore et dolore magnam aliquam quaerat
-                  voluptatem. Ut enim ad minima veniam, quis nostrum
-                  exercitationem ullam corporis suscipit laboriosam.
-                </FoodPrintText>
+                {scanResult.alternatives?.map(
+                  (alternative: string, index: number) => (
+                    <FoodPrintText
+                      variant="body"
+                      color="primary"
+                      key={alternative}
+                      style={[
+                        styles.bulletText,
+                        index === (scanResult.alternatives?.length || 0) - 1 &&
+                          styles.lastBulletText
+                      ]}
+                    >
+                      {"• " + alternative}
+                    </FoodPrintText>
+                  )
+                )}
               </View>
             </View>
           </ScrollView>
@@ -419,5 +411,12 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: "100%"
+  },
+  bulletText: {
+    lineHeight: 22,
+    marginBottom: 8
+  },
+  lastBulletText: {
+    marginBottom: 0
   }
 });

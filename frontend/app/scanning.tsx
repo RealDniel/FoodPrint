@@ -162,7 +162,12 @@ export default function ScanningScreen() {
             imageUrl: null,
             detailedInfo:
               carbonInfo?.detailed_info ||
-              "No additional information available."
+              "No additional information available.",
+            educationalSnippets:
+              carbonInfo?.educational_snippets ||
+              "No educational snippets available.",
+            alternatives:
+              carbonInfo?.alternatives || "No alternative foods available."
           };
 
           setScanResult(scanResult);

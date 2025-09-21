@@ -95,7 +95,9 @@ class FoodDetector:
             The JSON object must contain exactly these two fields:
             1. "food_name": The name of the food
             2. "concise_fact": A short, single-line string with the food's approximate carbon footprint (e.g., "0.1kg CO2 per kg")
-            3. "detailed_info": A paragraph explaining the carbon footprint in more detail, including factors that affect it and some educational snippets or alternatives
+            3. "detailed_info": A paragraph explaining the carbon footprint in more detail, including factors that affect it
+            4. "educational_snippets": List of a few education snippets
+            5. "alternatives": List of alternative foods that have a lower carbon footprint and similar nutrient. Be concise, single line per food alternative (e.g. Oranges (0.3 kg CO2e per kg))
 
             Example format:
             {{"concise_fact": "Banana: 0.1kg CO2 per kg", "detailed_info": "Bananas have a relatively low carbon footprint compared to other foods..."}}
