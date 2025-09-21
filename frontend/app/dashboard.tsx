@@ -2,15 +2,17 @@ import { FoodPrintButton } from '@/components/foodprint-button';
 import { FoodPrintText } from '@/components/foodprint-text';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useScanHistory } from '@/contexts/ScanHistoryContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { signOut, user } = useAuth();
+  const { dashboardData, dashboardLoading } = useScanHistory();
 
   const handleScanFood = () => {
     // Navigate to scanning screen
@@ -93,29 +95,28 @@ export default function DashboardScreen() {
       {/* Quick Stats */}
       <View style={styles.statsContainer}>
         <View style={[styles.statCard, { backgroundColor: colors.backgroundSecondary }]}>
-          <FoodPrintText variant="title" color="accent" size="2xl">
-            12
-          </FoodPrintText>
+          {dashboardLoading ? (
+            <ActivityIndicator size="small" color={colors.accent} />
+          ) : (
+            <FoodPrintText variant="title" color="accent" size="2xl">
+              {dashboardData?.totalScans || 0}
+            </FoodPrintText>
+          )}
           <FoodPrintText variant="caption" color="muted">
             Foods Scanned
           </FoodPrintText>
         </View>
         
         <View style={[styles.statCard, { backgroundColor: colors.backgroundSecondary }]}>
-          <FoodPrintText variant="title" color="success" size="2xl">
-            85%
-          </FoodPrintText>
+          {dashboardLoading ? (
+            <ActivityIndicator size="small" color={colors.success} />
+          ) : (
+            <FoodPrintText variant="title" color="success" size="2xl">
+              {dashboardData?.averageEcoScore || 100}%
+            </FoodPrintText>
+          )}
           <FoodPrintText variant="caption" color="muted">
             Eco Score
-          </FoodPrintText>
-        </View>
-        
-        <View style={[styles.statCard, { backgroundColor: colors.backgroundSecondary }]}>
-          <FoodPrintText variant="title" color="secondary" size="2xl">
-            2.3kg
-          </FoodPrintText>
-          <FoodPrintText variant="caption" color="muted">
-            CO₂ Saved
           </FoodPrintText>
         </View>
       </View>
@@ -170,32 +171,31 @@ export default function DashboardScreen() {
         </FoodPrintText>
         
         <View style={[styles.activityCard, { backgroundColor: colors.backgroundSecondary }]}>
-          <View style={styles.activityItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              🥗 Scanned Organic Salad
-            </FoodPrintText>
-            <FoodPrintText variant="caption" color="muted">
-              2 hours ago
-            </FoodPrintText>
-          </View>
-          
-          <View style={styles.activityItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              🍎 Added Local Apples
-            </FoodPrintText>
-            <FoodPrintText variant="caption" color="muted">
-              1 day ago
-            </FoodPrintText>
-          </View>
-          
-          <View style={styles.activityItem}>
-            <FoodPrintText variant="body" color="primary" weight="medium">
-              🌱 Discovered New Recipe
-            </FoodPrintText>
-            <FoodPrintText variant="caption" color="muted">
-              3 days ago
-            </FoodPrintText>
-          </View>
+          {dashboardLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <FoodPrintText variant="body" color="muted" style={styles.loadingText}>
+                Loading recent activity...
+              </FoodPrintText>
+            </View>
+          ) : dashboardData?.recentScans && dashboardData.recentScans.length > 0 ? (
+            dashboardData.recentScans.map((scan, index) => (
+              <View key={scan.id} style={styles.activityItem}>
+                <FoodPrintText variant="body" color="primary" weight="medium">
+                  📸 Scanned {scan.food_name}
+                </FoodPrintText>
+                <FoodPrintText variant="caption" color="muted">
+                  {new Date(scan.created_at).toLocaleDateString()}
+                </FoodPrintText>
+              </View>
+            ))
+          ) : (
+            <View style={styles.emptyStateContainer}>
+              <FoodPrintText variant="body" color="muted" style={styles.emptyStateText}>
+                🌱 Ready to start your eco-friendly journey? Scan your first food item!
+              </FoodPrintText>
+            </View>
+          )}
         </View>
       </View>
 
@@ -308,6 +308,21 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  loadingText: {
+    marginTop: 8,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyStateText: {
+    textAlign: 'center',
+    lineHeight: 22,
   },
   tipsContainer: {
     padding: 20,
