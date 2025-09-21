@@ -67,30 +67,46 @@ export function ScanHistoryProvider({ children }: { children: React.ReactNode })
   };
 
   const addScan = async (scanData: Omit<NewScanHistory, 'user_id'>) => {
-    if (!user) return { error: new Error('No user logged in') };
+    if (!user) {
+      console.error('addScan: No user logged in');
+      return { error: new Error('No user logged in') };
+    }
+
+    console.log('addScan: Attempting to save scan data:', { ...scanData, user_id: user.id });
+    console.log('addScan: Current user:', user);
+    console.log('addScan: User ID:', user.id);
 
     try {
+      const insertData = {
+        ...scanData,
+        user_id: user.id,
+      };
+      console.log('addScan: Insert data:', insertData);
+      
       const { data, error } = await supabase
         .from('scan_history')
-        .insert({
-          ...scanData,
-          user_id: user.id,
-        })
+        .insert(insertData)
         .select()
         .single();
 
       if (error) {
+        console.error('addScan: Supabase error:', error);
+        console.error('addScan: Error details:', JSON.stringify(error, null, 2));
+        console.error('addScan: Error message:', error.message);
+        console.error('addScan: Error code:', error.code);
         return { error };
       }
 
-      // Add to local state
-      setScans(prev => [data, ...prev]);
-      
-      // Update dashboard data cache immediately for fast UI updates
-      const updatedScans = [data, ...scans];
-      const newDashboardData = createDashboardData(updatedScans);
-      setDashboardData(newDashboardData);
-      await saveDashboardDataToCache(newDashboardData);
+      console.log('addScan: Successfully saved scan:', data);
+
+      // Add to local state and update dashboard data cache immediately for fast UI updates
+      setScans(prev => {
+        const updatedScans = [data, ...prev];
+        const newDashboardData = createDashboardData(updatedScans);
+        setDashboardData(newDashboardData);
+        saveDashboardDataToCache(newDashboardData); // Don't await to avoid blocking
+        return updatedScans;
+      });
       
       return { error: null };
     } catch (error) {

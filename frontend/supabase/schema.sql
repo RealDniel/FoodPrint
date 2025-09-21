@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.scan_history (
   food_category TEXT NOT NULL,
   carbon_footprint DECIMAL(10,2) NOT NULL,
   water_usage DECIMAL(10,2) NOT NULL,
-  sustainability_score INTEGER NOT NULL CHECK (sustainability_score >= 0 AND sustainability_score <= 100),
+  sustainability_score DECIMAL(10,2) NOT NULL CHECK (sustainability_score >= 0 AND sustainability_score <= 100),
   scan_date DATE NOT NULL,
   image_url TEXT,
   notes TEXT,
