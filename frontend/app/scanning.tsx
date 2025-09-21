@@ -96,6 +96,7 @@ export default function ScanningScreen() {
         // Send to backend for analysis
         // Try multiple endpoints in case of network changes
         const endpoints = [
+          "http://172.20.10.2:8000/detect-base64", // Previous IP address
           "http://172.20.10.5:8000/detect-base64", // Current IP address
           "http://10.0.0.5:8000/detect-base64", // Alternative IP
           "http://192.168.1.5:8000/detect-base64", // Home network IP
