@@ -156,8 +156,7 @@ export function ScanResultModal({
                   onPress={() =>
                     handleMetricInfo(
                       "CO₂ Footprint",
-                      scanResult.detailedInfo ||
-                        "Carbon footprint measures the total greenhouse gas emissions caused directly or indirectly by this food item, expressed as carbon dioxide equivalent (CO₂e). This includes emissions from production, processing, transportation, and packaging."
+                      "Carbon footprint measures the total greenhouse gas emissions caused directly or indirectly by this food item, expressed as carbon dioxide equivalent (CO₂e). This includes emissions from production, processing, transportation, and packaging."
                     )
                   }
                 >
@@ -235,7 +234,7 @@ export function ScanResultModal({
                 onPress={() =>
                   handleMetricInfo(
                     "Environmental Rating",
-                    "The Environmental Rating is calculated based on the carbon footprint of the food item. It uses a scale from 0-100, where higher scores indicate lower environmental impact. The rating considers factors like production methods, transportation distance, and processing requirements to provide an overall sustainability assessment."
+                    "A 0-100 score where higher numbers mean lower environmental impact. Based on carbon footprint: nuts and vegetables score near 100, beef scores near 0. The rating considers production, transportation, and processing emissions to give you a quick sustainability assessment."
                   )
                 }
               >
@@ -386,11 +385,11 @@ export function ScanResultModal({
           <View
             style={[
               styles.infoModalContainer,
-              { backgroundColor: colors.background }
+              { backgroundColor: colors.backgroundSecondary }
             ]}
           >
             <View style={styles.infoModalHeader}>
-              <FoodPrintText variant="subtitle" color="primary">
+              <FoodPrintText variant="subtitle" color="secondary">
                 {selectedMetric?.title}
               </FoodPrintText>
               <TouchableOpacity
@@ -402,13 +401,17 @@ export function ScanResultModal({
                 </FoodPrintText>
               </TouchableOpacity>
             </View>
-            <ScrollView style={styles.infoModalContent}>
+            <ScrollView
+              style={styles.infoModalContent}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.scrollContent}
+            >
               <FoodPrintText
                 variant="body"
-                color="primary"
+                color="muted"
                 style={styles.infoModalText}
               >
-                {selectedMetric?.description}
+                {selectedMetric?.description || "No description available"}
               </FoodPrintText>
             </ScrollView>
           </View>
@@ -564,7 +567,8 @@ const styles = StyleSheet.create({
   },
   infoModalContainer: {
     width: "90%",
-    maxHeight: "70%",
+    maxHeight: "80%",
+    minHeight: 300,
     borderRadius: 16,
     padding: 20,
     shadowColor: "#000",
@@ -580,15 +584,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16
+    marginBottom: 16,
+    marginTop: 4
   },
   infoCloseButton: {
     padding: 8
   },
   infoModalContent: {
-    flex: 1
+    flex: 1,
+    paddingHorizontal: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    borderRadius: 8,
+    backgroundColor: "rgba(0,0,0,0.02)"
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 20
   },
   infoModalText: {
-    lineHeight: 24
+    lineHeight: 24,
+    textAlign: "left",
+    paddingVertical: 8,
+    fontSize: 16,
+    fontWeight: "400"
   }
 });
