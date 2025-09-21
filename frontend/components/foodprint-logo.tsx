@@ -1,0 +1,50 @@
+import React from 'react';
+import { Defs, FeBlend, FeColorMatrix, FeComposite, FeFlood, FeGaussianBlur, FeOffset, Filter, G, LinearGradient, Path, Stop, Svg } from 'react-native-svg';
+
+interface FoodPrintLogoProps {
+  size?: number;
+  color?: string;
+}
+
+export function FoodPrintLogo({ size = 120, color }: FoodPrintLogoProps) {
+  const scale = size / 293; // Original SVG width is 293
+  
+  return (
+    <Svg width={size} height={size * (303/293)} viewBox="0 0 293 303" fill="none">
+      <Defs>
+        <LinearGradient id="paint0_linear_5_53" x1="95.5" y1="209.5" x2="264.5" y2="-17.5" gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#23522B" />
+          <Stop offset="1" stopColor="#4FB860" />
+        </LinearGradient>
+        <LinearGradient id="paint1_linear_5_53" x1="175.291" y1="89.0988" x2="175.291" y2="171.111" gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#A82D2D" />
+          <Stop offset="1" stopColor="#421212" />
+        </LinearGradient>
+        <Filter id="filter0_d_5_53" x="124" y="89.0988" width="102.583" height="90.0125" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+          <FeFlood floodOpacity="0" result="BackgroundImageFix"/>
+          <FeColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+          <FeOffset dy="4"/>
+          <FeGaussianBlur stdDeviation="2"/>
+          <FeComposite in2="hardAlpha" operator="out"/>
+          <FeColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+          <FeBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_53"/>
+          <FeBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_53" result="shape"/>
+        </Filter>
+      </Defs>
+      
+      {/* Leaf/Stem path */}
+      <Path 
+        d="M67.9824 220.071C71.8877 216.166 78.2198 216.166 82.125 220.071C86.0299 223.976 86.0298 230.308 82.125 234.213L17.0713 299.267C13.166 303.172 6.83395 303.172 2.92871 299.267C-0.976264 295.361 -0.976369 289.03 2.92871 285.125L67.9824 220.071ZM175.357 0C240.251 2.76341e-05 292.857 52.6066 292.857 117.5C292.857 182.393 240.251 235 175.357 235C147.921 235 122.682 225.596 102.686 209.836C101.823 214.482 97.7529 218 92.8574 218C87.3347 218 82.8574 213.523 82.8574 208C82.8574 203.425 85.9307 199.569 90.125 198.38C70.1275 177.313 57.8574 148.84 57.8574 117.5C57.8574 52.6066 110.464 0.000150539 175.357 0ZM175.857 17C120.629 17.0002 75.8574 61.7716 75.8574 117C75.8574 172.228 120.629 217 175.857 217C231.086 217 275.857 172.228 275.857 117C275.857 61.7715 231.086 17 175.857 17ZM175.857 22C228.324 22 270.857 64.533 270.857 117C270.857 169.467 228.324 212 175.857 212C123.39 212 80.8574 169.467 80.8574 117C80.8574 64.533 123.39 22.0002 175.857 22ZM175.857 29C127.256 29.0002 87.8574 68.399 87.8574 117C87.8574 165.601 127.256 205 175.857 205C224.458 205 263.857 165.601 263.857 117C263.857 68.399 224.458 29 175.857 29ZM194.543 63.0498C200.2 75.0804 180.989 93.7704 170.677 101.611C171.843 91.3487 178.249 69.2683 194.543 63.0498Z" 
+        fill="url(#paint0_linear_5_53)"
+      />
+      
+      {/* Apple with shadow */}
+      <G filter="url(#filter0_d_5_53)">
+        <Path 
+          d="M155.134 89.2477C162.428 88.4419 169.499 90.9466 175.423 95.8024C181.293 91.0861 188.262 88.6646 195.449 89.4586C212.741 91.369 224.743 111.163 222.257 133.67C219.77 156.176 203.737 172.873 186.445 170.963C182.333 170.508 178.521 169.041 175.131 166.768C171.822 168.92 168.121 170.312 164.138 170.752C146.846 172.662 130.813 155.965 128.326 133.459C125.84 110.952 137.842 91.158 155.134 89.2477Z" 
+          fill="url(#paint1_linear_5_53)"
+        />
+      </G>
+    </Svg>
+  );
+}
