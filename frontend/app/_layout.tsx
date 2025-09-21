@@ -40,6 +40,13 @@ export default function RootLayout() {
           }} 
         />
         <Stack.Screen 
+          name="upload-image" 
+          options={{ 
+            headerShown: false,
+            title: 'Upload Image'
+          }} 
+        />
+        <Stack.Screen 
           name="(tabs)" 
           options={{ 
             headerShown: false,
