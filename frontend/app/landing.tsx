@@ -22,9 +22,6 @@ export default function LandingScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Background gradient effect */}
-      <View style={[styles.backgroundGradient, { backgroundColor: colors.backgroundSecondary }]} />
-      
       {/* Main content */}
       <View style={styles.content}>
         {/* Top section */}
@@ -91,14 +88,6 @@ export default function LandingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  backgroundGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.6,
-    opacity: 0.3,
   },
   content: {
     flex: 1,
