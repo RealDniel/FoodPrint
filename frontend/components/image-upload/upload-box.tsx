@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 
 interface Props {
+  // onUpload will be called only on successful selection. Cancel will do nothing.
   onUpload: (uri: string) => void;
 }
 
@@ -31,6 +32,8 @@ export default function UploadBox({ onUpload }: Props) {
       if (!result.cancelled) {
         setLocalUri(result.uri);
         onUpload(result.uri);
+      } else {
+        // User cancelled — do nothing
       }
     } catch (err) {
       console.warn('Image pick error', err);
