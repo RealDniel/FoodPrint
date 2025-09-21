@@ -437,22 +437,18 @@ export default function ScanningScreen() {
     return detections.map((overlay) => {
       const [x1, y1, x2, y2] = overlay.detection.bbox;
 
-      // Improved coordinate mapping with proper aspect ratio handling
-      // Use actual image dimensions when available, fallback to screen dimensions
-      const cameraViewWidth = screenWidth;
-      const cameraViewHeight = screenHeight;
-
-      let scaleX, scaleY;
+      // Simple and accurate coordinate mapping
+      // Backend now provides actual image dimensions, so we can do direct scaling
       let scaledX1, scaledY1, scaledX2, scaledY2;
 
-      if (imageInfo) {
-        // Use actual image dimensions for more accurate mapping
+      if (imageInfo && imageInfo.width > 0 && imageInfo.height > 0) {
+        // Use actual image dimensions for accurate mapping
         const imageWidth = imageInfo.width;
         const imageHeight = imageInfo.height;
 
         // Calculate scaling factors from image space to screen space
-        scaleX = cameraViewWidth / imageWidth;
-        scaleY = cameraViewHeight / imageHeight;
+        const scaleX = screenWidth / imageWidth;
+        const scaleY = screenHeight / imageHeight;
 
         // Scale coordinates directly
         scaledX1 = x1 * scaleX;
@@ -460,39 +456,19 @@ export default function ScanningScreen() {
         scaledX2 = x2 * scaleX;
         scaledY2 = y2 * scaleY;
       } else {
-        // Fallback to YOLO-based mapping (less accurate)
-        const yoloInputSize = 640;
-        const screenAspectRatio = screenWidth / screenHeight;
-        const yoloAspectRatio = 1;
-
-        let yoloActualWidth, yoloActualHeight;
-        let offsetX = 0,
-          offsetY = 0;
-
-        if (screenAspectRatio > yoloAspectRatio) {
-          yoloActualHeight = yoloInputSize;
-          yoloActualWidth = Math.round(yoloInputSize * screenAspectRatio);
-          offsetX = (yoloActualWidth - yoloInputSize) / 2;
-        } else {
-          yoloActualWidth = yoloInputSize;
-          yoloActualHeight = Math.round(yoloInputSize / screenAspectRatio);
-          offsetY = (yoloActualHeight - yoloInputSize) / 2;
-        }
-
-        scaleX = cameraViewWidth / yoloActualWidth;
-        scaleY = cameraViewHeight / yoloActualHeight;
-
-        scaledX1 = (x1 + offsetX) * scaleX;
-        scaledY1 = (y1 + offsetY) * scaleY;
-        scaledX2 = (x2 + offsetX) * scaleX;
-        scaledY2 = (y2 + offsetY) * scaleY;
+        // Fallback: assume image dimensions match screen dimensions
+        // This is less accurate but prevents crashes
+        scaledX1 = x1;
+        scaledY1 = y1;
+        scaledX2 = x2;
+        scaledY2 = y2;
       }
 
-      // Ensure coordinates are within bounds
-      const clampedX1 = Math.max(0, Math.min(scaledX1, cameraViewWidth));
-      const clampedY1 = Math.max(0, Math.min(scaledY1, cameraViewHeight));
-      const clampedX2 = Math.max(0, Math.min(scaledX2, cameraViewWidth));
-      const clampedY2 = Math.max(0, Math.min(scaledY2, cameraViewHeight));
+      // Ensure coordinates are within screen bounds
+      const clampedX1 = Math.max(0, Math.min(scaledX1, screenWidth));
+      const clampedY1 = Math.max(0, Math.min(scaledY1, screenHeight));
+      const clampedX2 = Math.max(0, Math.min(scaledX2, screenWidth));
+      const clampedY2 = Math.max(0, Math.min(scaledY2, screenHeight));
 
       // Calculate final dimensions
       const finalWidth = Math.max(0, clampedX2 - clampedX1);
@@ -555,7 +531,7 @@ export default function ScanningScreen() {
           Screen: {screenWidth}x{screenHeight} (AR:{" "}
           {screenAspectRatio.toFixed(2)})
         </FoodPrintText>
-        {imageInfo ? (
+        {imageInfo && imageInfo.width > 0 ? (
           <FoodPrintText
             variant="caption"
             color="primary"
@@ -570,7 +546,7 @@ export default function ScanningScreen() {
             color="primary"
             style={styles.debugText}
           >
-            Image: Unknown (using YOLO fallback)
+            Image: Unknown (using fallback)
           </FoodPrintText>
         )}
         <FoodPrintText
@@ -587,6 +563,16 @@ export default function ScanningScreen() {
             style={styles.debugText}
           >
             First bbox: [{detections[0].detection.bbox.join(", ")}]
+          </FoodPrintText>
+        )}
+        {detections.length > 0 && imageInfo && imageInfo.width > 0 && (
+          <FoodPrintText
+            variant="caption"
+            color="primary"
+            style={styles.debugText}
+          >
+            Scale: {((screenWidth / imageInfo.width) * 100).toFixed(1)}% x{" "}
+            {((screenHeight / imageInfo.height) * 100).toFixed(1)}%
           </FoodPrintText>
         )}
       </View>

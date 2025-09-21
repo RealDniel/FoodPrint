@@ -218,6 +218,10 @@ class FoodDetector:
             return {
                 "detections": detections,
                 "annotated_image": annotated_image_b64,
+                "image_info": {
+                    "width": frame.shape[1],  # OpenCV uses (height, width, channels)
+                    "height": frame.shape[0]
+                },
                 "success": True,
                 "message": f"Found {len(detections)} food items"
             }
@@ -226,6 +230,10 @@ class FoodDetector:
             return {
                 "detections": [],
                 "annotated_image": "",
+                "image_info": {
+                    "width": 0,
+                    "height": 0
+                },
                 "success": False,
                 "message": f"Error processing image: {str(e)}"
             }
