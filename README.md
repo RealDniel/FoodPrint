@@ -1,6 +1,6 @@
 # FoodPrint 🌱
 
-> **Award-winning hackathon project** that raises awareness about food's environmental impact through computer vision and AI-powered insights.
+[slides for demo](https://docs.google.com/presentation/d/1mpJOxGHaqtE-2SGk5hCm3ixh3U18CxwrLIC75O5eTfw/edit?slide=id.g34905525097_0_3052#slide=id.g34905525097_0_3052)
 
 **FoodPrint** is an eco-friendly food tracking application that helps users understand how their food choices impact the environment. Unlike traditional carbon footprint apps that focus on transportation, FoodPrint educates users about the hidden environmental costs of their daily meals.
 
